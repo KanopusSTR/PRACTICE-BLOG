@@ -20,9 +20,9 @@ func (s *service) CreateToken(mail string) (string, error) {
 }
 
 func (s *service) ParseToken(stringToken string) (models.Token, *jwt.Token, error) {
-	t := models.Token{}
+	t := &models.Token{}
 	tkn, err := jwt.ParseWithClaims(stringToken, t, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.GetJWTKey()), nil
 	})
-	return t, tkn, err
+	return *t, tkn, err
 }
