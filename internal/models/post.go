@@ -1,24 +1,8 @@
 package models
 
-import "server/internal/entities"
-
 type PostRequest struct {
 	Header string `json:"header"`
 	Body   string `json:"body"`
-}
-
-type GetPostsResponse struct {
-	Posts []interface{} `json:"posts"`
-}
-
-type GetPostResponse struct {
-	Message string        `json:"message"`
-	Posts   entities.Post `json:"post"`
-}
-
-type WritePostResponse struct {
-	Message string `json:"message"`
-	PostId  int    `json:"post_id"`
 }
 
 type DeletePost struct {

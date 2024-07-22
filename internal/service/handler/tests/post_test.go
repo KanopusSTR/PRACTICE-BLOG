@@ -20,7 +20,7 @@ func TestDeletePost(t *testing.T) {
 		mail     string
 		postID   int
 		code     int
-		ans      models.ResultResponseBody
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -31,7 +31,7 @@ func TestDeletePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -43,7 +43,7 @@ func TestDeletePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusNotFound,
-			models.ResultResponseBody{Message: "deletePost error: "},
+			models.Response{Message: "deletePost error: "},
 			errors.New(""),
 		},
 
@@ -55,7 +55,7 @@ func TestDeletePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "deletePost error: "},
+			models.Response{Message: "deletePost error: "},
 			errors.New(""),
 		},
 
@@ -67,7 +67,7 @@ func TestDeletePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusForbidden,
-			models.ResultResponseBody{Message: "deletePost error: you do not have permission"},
+			models.Response{Message: "deletePost error: you do not have permission"},
 			errors.New(""),
 		},
 
@@ -79,7 +79,7 @@ func TestDeletePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "postId is required and it must be non-negative"},
+			models.Response{Message: "postId is required and it must be non-negative"},
 			errors.New(""),
 		},
 	}
@@ -118,7 +118,7 @@ func TestGetPosts(t *testing.T) {
 		postID   int
 		posts    []interface{}
 		code     int
-		ans      models.GetPostsResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -130,7 +130,7 @@ func TestGetPosts(t *testing.T) {
 			0,
 			[]interface{}{},
 			http.StatusOK,
-			models.GetPostsResponse{Posts: []interface{}{}},
+			models.Response{Data: []interface{}{}},
 			nil,
 		},
 	}
@@ -162,7 +162,7 @@ func TestGetPost(t *testing.T) {
 		postID   int
 		post     entities.Post
 		code     int
-		ans      models.GetPostResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -174,7 +174,7 @@ func TestGetPost(t *testing.T) {
 			0,
 			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
 			http.StatusOK,
-			models.GetPostResponse{Posts: entities.Post{PostId: 0, AuthorMail: "a@mail.ru"}, Message: "success"},
+			models.Response{Message: "success", Data: entities.Post{PostId: 0, AuthorMail: "a@mail.ru"}},
 			nil,
 		},
 
@@ -187,7 +187,7 @@ func TestGetPost(t *testing.T) {
 			1,
 			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
 			http.StatusNotFound,
-			models.GetPostResponse{Message: "getPost error: "},
+			models.Response{Message: "getPost error: "},
 			errors.New(""),
 		},
 
@@ -200,7 +200,7 @@ func TestGetPost(t *testing.T) {
 			0,
 			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
 			http.StatusBadRequest,
-			models.GetPostResponse{Message: "postId is required and it must be non-negative"},
+			models.Response{Message: "postId is required and it must be non-negative"},
 			errors.New(""),
 		},
 	}
@@ -232,7 +232,7 @@ func TestWritePost(t *testing.T) {
 		mail     string
 		postID   int
 		code     int
-		ans      models.WritePostResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -244,7 +244,7 @@ func TestWritePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusOK,
-			models.WritePostResponse{Message: "success", PostId: 0},
+			models.Response{Message: "success", Data: 0},
 			nil,
 		},
 
@@ -257,7 +257,7 @@ func TestWritePost(t *testing.T) {
 			"a@mail.ru",
 			1,
 			http.StatusBadRequest,
-			models.WritePostResponse{Message: "writePost error: "},
+			models.Response{Message: "writePost error: "},
 			errors.New(""),
 		},
 
@@ -270,7 +270,7 @@ func TestWritePost(t *testing.T) {
 			"text",
 			0,
 			http.StatusBadRequest,
-			models.WritePostResponse{Message: "writePost error: fun error"},
+			models.Response{Message: "writePost error: fun error"},
 			errors.New(""),
 		},
 	}
@@ -301,7 +301,7 @@ func TestEditPost(t *testing.T) {
 		mail     string
 		postID   int
 		code     int
-		ans      models.ResultResponseBody
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -312,7 +312,7 @@ func TestEditPost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -324,7 +324,7 @@ func TestEditPost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusNotFound,
-			models.ResultResponseBody{Message: "editPost error: "},
+			models.Response{Message: "editPost error: "},
 			errors.New(""),
 		},
 
@@ -336,7 +336,7 @@ func TestEditPost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusNotFound,
-			models.ResultResponseBody{Message: "editPost error: "},
+			models.Response{Message: "editPost error: "},
 			errors.New(""),
 		},
 
@@ -348,7 +348,7 @@ func TestEditPost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusForbidden,
-			models.ResultResponseBody{Message: "editPost error: you do not have permission"},
+			models.Response{Message: "editPost error: you do not have permission"},
 			errors.New(""),
 		},
 
@@ -360,7 +360,7 @@ func TestEditPost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "editPost error: fun error"},
+			models.Response{Message: "editPost error: fun error"},
 			errors.New(""),
 		},
 	}

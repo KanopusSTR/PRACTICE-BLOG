@@ -18,7 +18,7 @@ func TestLogin(t *testing.T) {
 		fun      func() (models.LoginRequest, error)
 		mail     string
 		code     int
-		ans      models.LoginResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -28,7 +28,7 @@ func TestLogin(t *testing.T) {
 			},
 			"a@mail.ru",
 			http.StatusOK,
-			models.LoginResponse{Message: "success", AccessToken: ""},
+			models.Response{Message: "success", Data: ""},
 			nil,
 		},
 
@@ -39,7 +39,7 @@ func TestLogin(t *testing.T) {
 			},
 			"a@mail.ru",
 			http.StatusUnprocessableEntity,
-			models.LoginResponse{Message: "authorization error: ", AccessToken: ""},
+			models.Response{Message: "authorization error: "},
 			errors.New(""),
 		},
 
@@ -50,7 +50,7 @@ func TestLogin(t *testing.T) {
 			},
 			"a@mail.ru",
 			http.StatusBadRequest,
-			models.LoginResponse{Message: "server error", AccessToken: ""},
+			models.Response{Message: "server error"},
 			errors.New(""),
 		},
 
@@ -61,7 +61,7 @@ func TestLogin(t *testing.T) {
 			},
 			"a@mail.ru",
 			http.StatusBadRequest,
-			models.LoginResponse{Message: "authorization error: fun error", AccessToken: ""},
+			models.Response{Message: "authorization error: fun error"},
 			errors.New(""),
 		},
 	}
@@ -98,7 +98,7 @@ func TestRegister(t *testing.T) {
 		name     string
 		mail     string
 		code     int
-		ans      models.ResultResponseBody
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -109,7 +109,7 @@ func TestRegister(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -120,7 +120,7 @@ func TestRegister(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusUnprocessableEntity,
-			models.ResultResponseBody{Message: "register error: "},
+			models.Response{Message: "register error: "},
 			errors.New(""),
 		},
 
@@ -132,7 +132,7 @@ func TestRegister(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "register error: fun error"},
+			models.Response{Message: "register error: fun error"},
 			errors.New(""),
 		},
 	}

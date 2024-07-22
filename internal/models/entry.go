@@ -11,11 +11,6 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginResponse struct {
-	Message     string `json:"message"`
-	AccessToken string `json:"access_token"`
-}
-
 type LoginMiddleware struct {
 	Token string
 }

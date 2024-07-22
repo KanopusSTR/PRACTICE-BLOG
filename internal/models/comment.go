@@ -20,8 +20,3 @@ type DeleteComment struct {
 type GetCommentsRequest struct {
 	PostId int `json:"post_id"`
 }
-
-type GetCommentsResponse struct {
-	Message  string        `json:"message"`
-	Comments []interface{} `json:"comments"`
-}

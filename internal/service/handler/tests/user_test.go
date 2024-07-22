@@ -20,7 +20,7 @@ func TestGetProfile(t *testing.T) {
 		name     string
 		mail     string
 		code     int
-		ans      models.GetProfileResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -31,7 +31,7 @@ func TestGetProfile(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusOK,
-			models.GetProfileResponse{Message: "success", Profile: models.ProfileResponse{Name: "a", Mail: "a@mail.ru"}},
+			models.Response{Message: "success", Data: models.ProfileResponse{Name: "a", Mail: "a@mail.ru"}},
 			nil,
 		},
 
@@ -42,7 +42,7 @@ func TestGetProfile(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusNotFound,
-			models.GetProfileResponse{Message: "getProfile error: "},
+			models.Response{Message: "getProfile error: "},
 			errors.New(""),
 		},
 
@@ -53,7 +53,7 @@ func TestGetProfile(t *testing.T) {
 			"a",
 			"a@mail.ru",
 			http.StatusInternalServerError,
-			models.GetProfileResponse{Message: "getProfile error: fun error"},
+			models.Response{Message: "getProfile error: fun error"},
 			errors.New(""),
 		},
 	}

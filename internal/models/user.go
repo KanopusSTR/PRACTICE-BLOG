@@ -1,10 +1,5 @@
 package models
 
-type GetProfileResponse struct {
-	Message string          `json:"message"`
-	Profile ProfileResponse `json:"profile"`
-}
-
 type GetUser struct {
 	Mail string `json:"mail"`
 }

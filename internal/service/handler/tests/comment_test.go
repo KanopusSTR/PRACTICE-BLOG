@@ -21,7 +21,7 @@ func TestDeleteComment(t *testing.T) {
 		postID    int
 		commentId int
 		code      int
-		ans       models.ResultResponseBody
+		ans       models.Response
 		error
 	}{
 		{"success",
@@ -33,7 +33,7 @@ func TestDeleteComment(t *testing.T) {
 			0,
 			0,
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -46,7 +46,7 @@ func TestDeleteComment(t *testing.T) {
 			0,
 			1,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "deleteComment error: "},
+			models.Response{Message: "deleteComment error: "},
 			errors.New(""),
 		},
 
@@ -59,7 +59,7 @@ func TestDeleteComment(t *testing.T) {
 			0,
 			1,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "deleteComment error: "},
+			models.Response{Message: "deleteComment error: "},
 			errors.New(""),
 		},
 
@@ -72,7 +72,7 @@ func TestDeleteComment(t *testing.T) {
 			0,
 			0,
 			http.StatusForbidden,
-			models.ResultResponseBody{Message: "deleteComment error: you do not have permission"},
+			models.Response{Message: "deleteComment error: you do not have permission"},
 			errors.New(""),
 		},
 
@@ -85,7 +85,7 @@ func TestDeleteComment(t *testing.T) {
 			0,
 			0,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "deleteComments error: fun error"},
+			models.Response{Message: "deleteComments error: fun error"},
 			errors.New(""),
 		},
 	}
@@ -125,7 +125,7 @@ func TestGetComments(t *testing.T) {
 		postID   int
 		comments []interface{}
 		code     int
-		ans      models.GetCommentsResponse
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -137,7 +137,7 @@ func TestGetComments(t *testing.T) {
 			0,
 			[]interface{}{},
 			http.StatusOK,
-			models.GetCommentsResponse{Comments: []interface{}{}, Message: "success"},
+			models.Response{Message: "success", Data: []interface{}{}},
 			nil,
 		},
 
@@ -150,7 +150,7 @@ func TestGetComments(t *testing.T) {
 			1,
 			[]interface{}{},
 			http.StatusBadRequest,
-			models.GetCommentsResponse{Message: "getComments error: "},
+			models.Response{Message: "getComments error: "},
 			errors.New(""),
 		},
 
@@ -163,7 +163,7 @@ func TestGetComments(t *testing.T) {
 			0,
 			[]interface{}{},
 			http.StatusBadRequest,
-			models.GetCommentsResponse{Message: "getComments error: fun error"},
+			models.Response{Message: "getComments error: fun error"},
 			errors.New(""),
 		},
 	}
@@ -195,7 +195,7 @@ func TestWriteComment(t *testing.T) {
 		mail     string
 		postID   int
 		code     int
-		ans      models.ResultResponseBody
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -207,7 +207,7 @@ func TestWriteComment(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -220,7 +220,7 @@ func TestWriteComment(t *testing.T) {
 			"a@mail.ru",
 			1,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "writeComment error: "},
+			models.Response{Message: "writeComment error: "},
 			errors.New(""),
 		},
 
@@ -233,7 +233,7 @@ func TestWriteComment(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "writeComment error: fun error"},
+			models.Response{Message: "writeComment error: fun error"},
 			errors.New(""),
 		},
 	}

@@ -19,7 +19,7 @@ func TestLoginMiddleware(t *testing.T) {
 		fun      func() (models.LoginMiddleware, error)
 		mail     string
 		code     int
-		ans      models.ResultResponseBody
+		ans      models.Response
 		error
 	}{
 		{"success",
@@ -29,7 +29,7 @@ func TestLoginMiddleware(t *testing.T) {
 			},
 			"a@mail.ru",
 			http.StatusOK,
-			models.ResultResponseBody{Message: "success"},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -39,7 +39,7 @@ func TestLoginMiddleware(t *testing.T) {
 			},
 			"",
 			http.StatusForbidden,
-			models.ResultResponseBody{Message: "accessibility error: you do not have permission"},
+			models.Response{Message: "accessibility error: you do not have permission"},
 			nil,
 		},
 
@@ -50,7 +50,7 @@ func TestLoginMiddleware(t *testing.T) {
 			},
 			"",
 			http.StatusUnauthorized,
-			models.ResultResponseBody{Message: "accessibility error: you do not have permission"},
+			models.Response{Message: "accessibility error: you do not have permission"},
 			errors.New(""),
 		},
 
@@ -61,7 +61,7 @@ func TestLoginMiddleware(t *testing.T) {
 			},
 			"",
 			http.StatusBadRequest,
-			models.ResultResponseBody{Message: "middleware error: fun error"},
+			models.Response{Message: "middleware error: fun error"},
 			errors.New(""),
 		},
 	}
