@@ -7,22 +7,22 @@ import (
 )
 
 type Service interface {
-	WritePost(fun func() (models.WritePost, error)) (int, models.WritePostResponse)
-	GetPost(fun func() (models.GetPost, error)) (int, models.GetPostResponse)
-	GetPosts() (int, models.GetPostsResponse)
-	EditPost(fun func() (models.EditPost, error)) (int, models.ResultResponseBody)
-	DeletePost(fun func() (models.DeletePost, error)) (int, models.ResultResponseBody)
+	WritePost(fun func() (models.WritePost, error)) (int, models.Response)
+	GetPost(fun func() (models.GetPost, error)) (int, models.Response)
+	GetPosts() (int, models.Response)
+	EditPost(fun func() (models.EditPost, error)) (int, models.Response)
+	DeletePost(fun func() (models.DeletePost, error)) (int, models.Response)
 
-	GetUser(fun func() (models.GetUser, error)) (int, models.GetProfileResponse)
+	GetUser(fun func() (models.GetUser, error)) (int, models.Response)
 
-	LoginMiddleware(fun func() (models.LoginMiddleware, error)) (int, models.ResultResponseBody, string)
+	LoginMiddleware(fun func() (models.LoginMiddleware, error)) (int, models.Response, string)
 
-	WriteComment(fun func() (models.WriteComment, error)) (int, models.ResultResponseBody)
-	GetComments(fun func() (models.GetCommentsRequest, error)) (int, models.GetCommentsResponse)
-	DeleteComment(fun func() (models.DeleteComment, error)) (int, models.ResultResponseBody)
+	WriteComment(fun func() (models.WriteComment, error)) (int, models.Response)
+	GetComments(fun func() (models.GetCommentsRequest, error)) (int, models.Response)
+	DeleteComment(fun func() (models.DeleteComment, error)) (int, models.Response)
 
-	Login(fun func() (models.LoginRequest, error)) (int, models.LoginResponse)
-	Register(fun func() (models.RegisterRequest, error)) (int, models.ResultResponseBody)
+	Login(fun func() (models.LoginRequest, error)) (int, models.Response)
+	Register(fun func() (models.RegisterRequest, error)) (int, models.Response)
 }
 
 type handlerService struct {

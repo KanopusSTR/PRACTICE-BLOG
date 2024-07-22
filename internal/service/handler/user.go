@@ -5,18 +5,18 @@ import (
 	"server/internal/models"
 )
 
-func (hs *handlerService) GetUser(fun func() (models.GetUser, error)) (int, models.GetProfileResponse) {
+func (hs *handlerService) GetUser(fun func() (models.GetUser, error)) (int, models.Response) {
 	req, err := fun()
 	if err != nil {
-		return http.StatusInternalServerError, models.GetProfileResponse{Message: "getProfile error: " + err.Error()}
+		return http.StatusInternalServerError, models.Response{Message: "getProfile error: " + err.Error()}
 	}
 	profile, err := hs.users.GetProfile(req.Mail)
 	if err != nil {
-		return http.StatusNotFound, models.GetProfileResponse{Message: "getProfile error: " + err.Error()}
+		return http.StatusNotFound, models.Response{Message: "getProfile error: " + err.Error()}
 	}
-	return http.StatusOK, models.GetProfileResponse{
+	return http.StatusOK, models.Response{
 		Message: "success",
-		Profile: models.ProfileResponse{Name: profile.Name, Mail: profile.Mail},
+		Data:    models.ProfileResponse{Name: profile.Name, Mail: profile.Mail},
 	}
 
 }
