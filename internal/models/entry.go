@@ -12,5 +12,5 @@ type LoginRequest struct {
 }
 
 type LoginMiddleware struct {
-	Token string
+	Token string `json:"token"`
 }

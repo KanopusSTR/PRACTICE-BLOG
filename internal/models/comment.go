@@ -7,14 +7,14 @@ type WriteCommentRequest struct {
 
 type WriteComment struct {
 	Text   string `json:"text"`
-	PostId int
-	Mail   string
+	PostId int    `json:"post_id"`
+	Mail   string `json:"mail"`
 }
 
 type DeleteComment struct {
-	PostId    int
-	CommentId int
-	Mail      string
+	PostId    int    `json:"post_id"`
+	CommentId int    `json:"comment_id"`
+	Mail      string `json:"mail"`
 }
 
 type GetCommentsRequest struct {

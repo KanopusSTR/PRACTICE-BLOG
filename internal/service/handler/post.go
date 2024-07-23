@@ -54,7 +54,7 @@ func (hs *handlerService) GetPost(fun func() (models.GetPost, error)) (int, mode
 
 func (hs *handlerService) GetPosts() (int, models.Response) {
 	posts := hs.users.GetPosts()
-	return http.StatusOK, models.Response{Data: posts}
+	return http.StatusOK, models.Response{Message: "success", Data: posts}
 }
 
 func (hs *handlerService) WritePost(fun func() (models.WritePost, error)) (int, models.Response) {
