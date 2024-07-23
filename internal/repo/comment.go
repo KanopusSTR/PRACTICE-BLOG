@@ -15,26 +15,25 @@ type Comment interface {
 }
 
 type comment struct {
-	comments  map[int]*treemap.Map
-	commentId int
+	comments map[int]*treemap.Map
 }
 
 func NewComment() Comment {
-	return &comment{comments: make(map[int]*treemap.Map), commentId: -1}
+	return &comment{comments: make(map[int]*treemap.Map)}
 }
 
 func (repo *comment) Add(text *string, date time.Time, authorMail string, postId int) int {
 	if repo.comments[postId] == nil {
 		repo.comments[postId] = treemap.NewWithIntComparator()
 	}
-	repo.commentId++
-	repo.comments[postId].Put(repo.commentId, &entities.Comment{
-		CommentId:  repo.commentId,
+	commentId := repo.comments[postId].Size()
+	repo.comments[postId].Put(commentId, &entities.Comment{
+		CommentId:  commentId,
 		Text:       *text,
 		Date:       date,
 		AuthorMail: authorMail,
 		PostId:     postId})
-	return repo.commentId
+	return commentId
 }
 
 func (repo *comment) Remove(postId, commentId int) error {
