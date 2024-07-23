@@ -130,7 +130,7 @@ func TestGetPosts(t *testing.T) {
 			0,
 			[]interface{}{},
 			http.StatusOK,
-			models.Response{Data: []interface{}{}},
+			models.Response{Message: "success", Data: []interface{}{}},
 			nil,
 		},
 	}
