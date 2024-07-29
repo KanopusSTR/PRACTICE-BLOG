@@ -4,7 +4,7 @@ import (
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
 	"server/internal/entities"
-	"server/internal/service"
+	"server/internal/service/users"
 	mock "server/internal/service/users/tests/minimock"
 	"server/pkg"
 	"server/pkg/myErrors"
@@ -36,7 +36,7 @@ func TestRegister(t *testing.T) {
 
 			userRepo := mock.NewUserMock(mc)
 
-			s := service.New(userRepo, nil, nil)
+			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName != "incorrect mail" && tc.testName != "empty name" && tc.testName != "empty password" {
 				userRepo.AddUserMock.Expect(entities.User{
@@ -46,7 +46,7 @@ func TestRegister(t *testing.T) {
 				}).Return(tc.errorMessage)
 			}
 
-			err := s.Users.Register(tc.name, tc.mail, tc.password)
+			err := userS.Register(tc.name, tc.mail, tc.password)
 			require.Equal(t, tc.errorMessage, err)
 		})
 	}
@@ -74,7 +74,7 @@ func TestLogin(t *testing.T) {
 
 			userRepo := mock.NewUserMock(mc)
 
-			s := service.New(userRepo, nil, nil)
+			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName == "user doesn't exist" {
 				userRepo.GetUserMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
@@ -82,7 +82,7 @@ func TestLogin(t *testing.T) {
 				userRepo.GetUserMock.Expect(tc.mail).Return(&entities.User{Password: pkg.GetStringHash(tc.password)}, tc.errorMessage)
 			}
 
-			err := s.Users.Authorization(tc.mail, tc.password)
+			err := userS.Authorization(tc.mail, tc.password)
 			require.Equal(t, tc.errorMessage, err)
 		})
 	}
@@ -108,7 +108,7 @@ func TestGetUser(t *testing.T) {
 
 			userRepo := mock.NewUserMock(mc)
 
-			s := service.New(userRepo, nil, nil)
+			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName == "user doesn't exist" {
 				userRepo.GetUserMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
@@ -116,7 +116,7 @@ func TestGetUser(t *testing.T) {
 				userRepo.GetUserMock.Expect(tc.mail).Return(&entities.User{Mail: tc.mail}, tc.errorMessage)
 			}
 
-			_, err := s.Users.GetProfile(tc.mail)
+			_, err := userS.GetProfile(tc.mail)
 			require.Equal(t, tc.errorMessage, err)
 		})
 	}

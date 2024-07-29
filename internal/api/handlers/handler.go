@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"server/internal/service"
+	handlers "server/internal/service/handler"
 )
 
 type Handler interface {
@@ -25,11 +25,11 @@ type Handler interface {
 }
 
 type handler struct {
-	app *service.I
+	handlerS handlers.Service
 }
 
-func New(i *service.I) Handler {
-	return &handler{i}
+func New(h handlers.Service) Handler {
+	return &handler{handlerS: h}
 }
 
 func (h *handler) HandleSuccess(c *gin.Context, code int, data interface{}) {

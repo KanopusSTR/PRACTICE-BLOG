@@ -22,7 +22,7 @@ func (h *handler) DeleteComment(c *gin.Context) {
 		req.Mail = c.GetString("mail")
 		return req, nil
 	}
-	c.JSON(h.app.Handler.DeleteComment(fun))
+	c.JSON(h.handlerS.DeleteComment(fun))
 }
 
 func (h *handler) GetComments(c *gin.Context) {
@@ -30,7 +30,7 @@ func (h *handler) GetComments(c *gin.Context) {
 		var req models.GetCommentsRequest
 		return req, c.BindJSON(&req)
 	}
-	c.JSON(h.app.Handler.GetComments(fun))
+	c.JSON(h.handlerS.GetComments(fun))
 }
 
 func (h *handler) WriteComment(c *gin.Context) {
@@ -43,5 +43,5 @@ func (h *handler) WriteComment(c *gin.Context) {
 		req.Mail = c.GetString("mail")
 		return req, nil
 	}
-	c.JSON(h.app.Handler.WriteComment(fun))
+	c.JSON(h.handlerS.WriteComment(fun))
 }

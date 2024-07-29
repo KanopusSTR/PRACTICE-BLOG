@@ -13,7 +13,7 @@ func (h *handler) LoginMiddleware(c *gin.Context) {
 		t.Token = token
 		return t, nil
 	}
-	code, rb, mail := h.app.Handler.LoginMiddleware(fun)
+	code, rb, mail := h.handlerS.LoginMiddleware(fun)
 	if code != http.StatusOK {
 		c.JSON(code, rb)
 		c.Abort()

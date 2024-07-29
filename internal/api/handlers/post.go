@@ -16,7 +16,7 @@ func (h *handler) DeletePost(c *gin.Context) {
 		dp.Mail = mail
 		return dp, err
 	}
-	c.JSON(h.app.Handler.DeletePost(fun))
+	c.JSON(h.handlerS.DeletePost(fun))
 }
 
 func (h *handler) EditPost(c *gin.Context) {
@@ -34,7 +34,7 @@ func (h *handler) EditPost(c *gin.Context) {
 		ep.Mail = c.GetString("mail")
 		return ep, nil
 	}
-	c.JSON(h.app.Handler.EditPost(fun))
+	c.JSON(h.handlerS.EditPost(fun))
 }
 
 func (h *handler) GetPost(c *gin.Context) {
@@ -44,11 +44,11 @@ func (h *handler) GetPost(c *gin.Context) {
 		gp.Id = postId
 		return gp, err
 	}
-	c.JSON(h.app.Handler.GetPost(fun))
+	c.JSON(h.handlerS.GetPost(fun))
 }
 
 func (h *handler) GetPosts(c *gin.Context) {
-	c.JSON(h.app.Handler.GetPosts())
+	c.JSON(h.handlerS.GetPosts())
 }
 
 func (h *handler) WritePost(c *gin.Context) {
@@ -58,5 +58,5 @@ func (h *handler) WritePost(c *gin.Context) {
 		wp.Mail = c.GetString("mail")
 		return wp, err
 	}
-	c.JSON(h.app.Handler.WritePost(fun))
+	c.JSON(h.handlerS.WritePost(fun))
 }

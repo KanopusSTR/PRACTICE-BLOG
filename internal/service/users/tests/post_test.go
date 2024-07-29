@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"server/internal/service"
+	"server/internal/service/users"
 	minimock2 "server/internal/service/users/tests/minimock"
 	"server/pkg/myErrors"
 	"testing"
@@ -34,12 +34,12 @@ func TestWritePost(t *testing.T) {
 			t.Parallel()
 
 			postMock := minimock2.NewPostMock(mc)
-			s := service.New(nil, postMock, nil)
+			userS := users.New(nil, postMock, nil)
 
 			if tc.errorMessage == nil {
 				postMock.AddMock.Expect(&tc.header, &tc.body, tc.date, tc.mail).Return(0)
 			}
-			_, err := s.Users.WritePost(&tc.header, &tc.body, tc.date, tc.mail)
+			_, err := userS.WritePost(&tc.header, &tc.body, tc.date, tc.mail)
 
 			require.Equal(t, tc.errorMessage, err)
 		})
@@ -69,7 +69,7 @@ func TestEditPost(t *testing.T) {
 			t.Parallel()
 
 			postMock := minimock2.NewPostMock(mc)
-			s := service.New(nil, postMock, nil)
+			userS := users.New(nil, postMock, nil)
 
 			if tc.body == "" || tc.header == "" {
 				require.Equal(t, tc.errorMessage, myErrors.EmptyPost)
@@ -78,7 +78,7 @@ func TestEditPost(t *testing.T) {
 				if !errors.Is(tc.errorMessage, myErrors.EmptyPost) {
 					postMock.UpdateMock.Expect(tc.postId, &tc.header, &tc.body).Return(tc.errorMessage)
 				}
-				err := s.Users.EditPost(tc.postId, &tc.header, &tc.body)
+				err := userS.EditPost(tc.postId, &tc.header, &tc.body)
 
 				require.Equal(t, tc.errorMessage, err)
 			}
@@ -105,10 +105,10 @@ func TestDeletePost(t *testing.T) {
 			t.Parallel()
 
 			postMock := minimock2.NewPostMock(mc)
-			s := service.New(nil, postMock, nil)
+			userS := users.New(nil, postMock, nil)
 
 			postMock.RemoveMock.Expect(tc.postId).Return(tc.errorMessage)
-			err := s.Users.DeletePost(tc.postId)
+			err := userS.DeletePost(tc.postId)
 
 			require.Equal(t, tc.errorMessage, err)
 		})
@@ -131,11 +131,11 @@ func TestGetPosts(t *testing.T) {
 
 			mc := minimock.NewController(t)
 			postMock := minimock2.NewPostMock(mc)
-			s := service.New(nil, postMock, nil)
+			userS := users.New(nil, postMock, nil)
 
 			postMock.GetPostsMock.Expect().Return(nil)
 
-			_ = s.Users.GetPosts()
+			_ = userS.GetPosts()
 			require.Equal(t, tc.errorMessage, nil)
 		})
 	}
@@ -159,11 +159,11 @@ func TestGetPost(t *testing.T) {
 
 			mc := minimock.NewController(t)
 			postMock := minimock2.NewPostMock(mc)
-			s := service.New(nil, postMock, nil)
+			userS := users.New(nil, postMock, nil)
 
 			postMock.GetPostMock.Expect(tc.postId).Return(nil, tc.errorMessage)
 
-			_, err := s.Users.GetPost(tc.postId)
+			_, err := userS.GetPost(tc.postId)
 			require.Equal(t, tc.errorMessage, err)
 		})
 	}

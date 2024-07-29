@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/gojuno/minimock/v3"
 	"github.com/stretchr/testify/require"
-	"server/internal/service"
+	"server/internal/service/users"
 	mock "server/internal/service/users/tests/minimock"
 	"server/pkg/myErrors"
 	"testing"
@@ -36,7 +36,7 @@ func TestWriteComment(t *testing.T) {
 			commentMock := mock.NewCommentMock(mc)
 			postMock := mock.NewPostMock(mc)
 			userMock := mock.NewUserMock(mc)
-			s := service.New(userMock, postMock, commentMock)
+			userS := users.New(userMock, postMock, commentMock)
 
 			if tc.postId == 0 {
 				postMock.GetPostMock.Expect(0).Return(nil, nil)
@@ -46,7 +46,7 @@ func TestWriteComment(t *testing.T) {
 			if tc.errorMessage == nil {
 				commentMock.AddMock.Expect(&tc.text, tc.date, tc.mail, tc.postId).Return(0)
 			}
-			err := s.Users.WriteComment(&tc.text, tc.date, tc.mail, tc.postId)
+			err := userS.WriteComment(&tc.text, tc.date, tc.mail, tc.postId)
 
 			require.Equal(t, tc.errorMessage, err)
 		})
@@ -76,7 +76,7 @@ func TestDeleteComment(t *testing.T) {
 			commentMock := mock.NewCommentMock(mc)
 			postMock := mock.NewPostMock(mc)
 			userMock := mock.NewUserMock(mc)
-			s := service.New(userMock, postMock, commentMock)
+			userS := users.New(userMock, postMock, commentMock)
 
 			if tc.postId == 0 {
 				postMock.GetPostMock.Expect(0).Return(nil, nil)
@@ -86,7 +86,7 @@ func TestDeleteComment(t *testing.T) {
 			if !errors.Is(tc.errorMessage, myErrors.PostNotFound) {
 				commentMock.RemoveMock.Expect(tc.postId, tc.commentId).Return(tc.errorMessage)
 			}
-			err := s.Users.DeleteComment(tc.postId, tc.commentId)
+			err := userS.DeleteComment(tc.postId, tc.commentId)
 
 			require.Equal(t, tc.errorMessage, err)
 		})
@@ -114,7 +114,7 @@ func TestGetComments(t *testing.T) {
 			commentMock := mock.NewCommentMock(mc)
 			postMock := mock.NewPostMock(mc)
 			userMock := mock.NewUserMock(mc)
-			s := service.New(userMock, postMock, commentMock)
+			userS := users.New(userMock, postMock, commentMock)
 
 			if tc.postId == 0 {
 				postMock.GetPostMock.Expect(0).Return(nil, nil)
@@ -124,7 +124,7 @@ func TestGetComments(t *testing.T) {
 			if !errors.Is(tc.errorMessage, myErrors.PostNotFound) {
 				commentMock.GetPostCommentsMock.Expect(tc.postId).Return(nil)
 			}
-			_, err := s.Users.GetComments(tc.postId)
+			_, err := userS.GetComments(tc.postId)
 			require.Equal(t, tc.errorMessage, err)
 		})
 	}
@@ -153,7 +153,7 @@ func TestGetComment(t *testing.T) {
 			commentMock := mock.NewCommentMock(mc)
 			postMock := mock.NewPostMock(mc)
 			userMock := mock.NewUserMock(mc)
-			s := service.New(userMock, postMock, commentMock)
+			userS := users.New(userMock, postMock, commentMock)
 
 			if tc.postId == 0 {
 				postMock.GetPostMock.Expect(0).Return(nil, nil)
@@ -163,7 +163,7 @@ func TestGetComment(t *testing.T) {
 			if !errors.Is(tc.errorMessage, myErrors.PostNotFound) {
 				commentMock.GetPostCommentMock.Expect(tc.postId, tc.commentId).Return(nil, tc.errorMessage)
 			}
-			_, err := s.Users.GetComment(tc.postId, tc.commentId)
+			_, err := userS.GetComment(tc.postId, tc.commentId)
 
 			require.Equal(t, tc.errorMessage, err)
 		})

@@ -11,5 +11,5 @@ func (h *handler) GetUser(c *gin.Context) {
 		gu.Mail = c.Param("mail")
 		return gu, nil
 	}
-	c.JSON(h.app.Handler.GetUser(fun))
+	c.JSON(h.handlerS.GetUser(fun))
 }

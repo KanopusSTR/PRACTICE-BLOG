@@ -3,7 +3,9 @@ package app
 import (
 	"server/internal/api/handlers"
 	"server/internal/repo"
-	"server/internal/service"
+	hs "server/internal/service/handler"
+	"server/internal/service/token"
+	"server/internal/service/users"
 )
 
 type serviceProvider struct {
@@ -11,7 +13,9 @@ type serviceProvider struct {
 	userRepo    repo.User
 	postRepo    repo.Post
 
-	service *service.I
+	usersS   users.Service
+	tokenS   token.Service
+	handlerS hs.Service
 }
 
 func newServiceProvider() *serviceProvider {
@@ -25,11 +29,14 @@ func (s *serviceProvider) repo() (repo.User, repo.Post, repo.Comment) {
 	return s.userRepo, s.postRepo, s.commentRepo
 }
 
-func (s *serviceProvider) serviceImpl() *service.I {
-	s.service = service.New(s.repo())
-	return s.service
+func (s *serviceProvider) serviceImpl() (users.Service, token.Service, hs.Service) {
+	s.usersS = users.New(s.repo())
+	s.tokenS = token.New()
+	s.handlerS = hs.New(s.usersS, s.tokenS)
+	return s.usersS, s.tokenS, s.handlerS
 }
 
 func (s *serviceProvider) handler() handlers.Handler {
-	return handlers.New(s.serviceImpl())
+	s.serviceImpl()
+	return handlers.New(s.handlerS)
 }

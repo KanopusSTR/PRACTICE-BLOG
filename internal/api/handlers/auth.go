@@ -10,7 +10,7 @@ func (h *handler) Login(c *gin.Context) {
 		var req models.LoginRequest
 		return req, c.BindJSON(&req)
 	}
-	c.JSON(h.app.Handler.Login(fun))
+	c.JSON(h.handlerS.Login(fun))
 }
 
 func (h *handler) Register(c *gin.Context) {
@@ -18,5 +18,5 @@ func (h *handler) Register(c *gin.Context) {
 		var req models.RegisterRequest
 		return req, c.BindJSON(&req)
 	}
-	c.JSON(h.app.Handler.Register(fun))
+	c.JSON(h.handlerS.Register(fun))
 }
