@@ -39,7 +39,7 @@ func TestRegister(t *testing.T) {
 			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName != "incorrect mail" && tc.testName != "empty name" && tc.testName != "empty password" {
-				userRepo.AddUserMock.Expect(entities.User{
+				userRepo.AddMock.Expect(entities.User{
 					Name:     tc.name,
 					Mail:     tc.mail,
 					Password: pkg.GetStringHash(tc.password),
@@ -77,9 +77,9 @@ func TestLogin(t *testing.T) {
 			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName == "user doesn't exist" {
-				userRepo.GetUserMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
+				userRepo.GetMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
 			} else {
-				userRepo.GetUserMock.Expect(tc.mail).Return(&entities.User{Password: pkg.GetStringHash(tc.password)}, tc.errorMessage)
+				userRepo.GetMock.Expect(tc.mail).Return(&entities.User{Password: pkg.GetStringHash(tc.password)}, tc.errorMessage)
 			}
 
 			err := userS.Authorization(tc.mail, tc.password)
@@ -111,9 +111,9 @@ func TestGetUser(t *testing.T) {
 			userS := users.New(userRepo, nil, nil)
 
 			if tc.testName == "user doesn't exist" {
-				userRepo.GetUserMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
+				userRepo.GetMock.Expect(tc.mail).Return(nil, myErrors.UserNotFound)
 			} else {
-				userRepo.GetUserMock.Expect(tc.mail).Return(&entities.User{Mail: tc.mail}, tc.errorMessage)
+				userRepo.GetMock.Expect(tc.mail).Return(&entities.User{Mail: tc.mail}, tc.errorMessage)
 			}
 
 			_, err := userS.GetProfile(tc.mail)

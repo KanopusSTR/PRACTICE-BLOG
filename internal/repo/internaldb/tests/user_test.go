@@ -3,7 +3,7 @@ package tests
 import (
 	"github.com/stretchr/testify/require"
 	"server/internal/entities"
-	"server/internal/repo"
+	"server/internal/repo/internaldb"
 	"server/pkg/myErrors"
 	"testing"
 )
@@ -23,7 +23,7 @@ func TestAddUser(t *testing.T) {
 		{"double", "hoho", "hohoho@hoho.com", []byte("hohoho"), myErrors.UserAlreadyExists},
 	}
 
-	userRepo := repo.NewUser()
+	userRepo := internaldb.NewUser()
 
 	for _, tc := range testCasesUsers {
 		tc := tc
@@ -66,7 +66,7 @@ func TestGetUser(t *testing.T) {
 		}, myErrors.UserNotFound},
 	}
 
-	userRepo := repo.NewUser()
+	userRepo := internaldb.NewUser()
 
 	for _, tc := range testCasesUsers {
 		tc := tc

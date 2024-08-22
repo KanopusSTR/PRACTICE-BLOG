@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/stretchr/testify/require"
 	"server/internal/entities"
-	"server/internal/repo"
+	"server/internal/repo/internaldb"
 	"server/pkg/myErrors"
 	"testing"
 	"time"
@@ -25,17 +25,17 @@ func TestAddComment(t *testing.T) {
 		{"empty", "", time.Now(), "hohoho@hoho.com", 0},
 	}
 
-	commentRepo := repo.NewComment()
-
 	for _, tc := range testCasesComments {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			id := commentRepo.Add(&tc.text, tc.date, tc.mail, tc.postId)
-			comment, err := commentRepo.GetPostComment(tc.postId, id)
+			commentRepo := internaldb.NewComment()
+			err := commentRepo.Add(&tc.text, tc.date, tc.mail, tc.postId)
+			require.Nil(t, err)
+			comment, err := commentRepo.GetPostComment(tc.postId, 0)
 			require.Nil(t, err)
 			require.Equal(t, &entities.Comment{
-				CommentId:  id,
+				CommentId:  0,
 				Text:       tc.text,
 				Date:       tc.date,
 				AuthorMail: tc.mail,
@@ -66,7 +66,7 @@ func TestRemoveComment(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			commentRepo := repo.NewComment()
+			commentRepo := internaldb.NewComment()
 			_ = commentRepo.Add(&base.text, base.date, base.mail, tc.postId)
 			err := commentRepo.Remove(tc.postId, tc.commentId)
 			require.Equal(t, tc.errorMessage, err)
@@ -115,11 +115,12 @@ func TestGetPostComments(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			commentRepo := repo.NewComment()
+			commentRepo := internaldb.NewComment()
 			for _, comment := range tc.comments {
 				_ = commentRepo.Add(&comment.Text, comment.Date, comment.AuthorMail, comment.PostId)
 			}
-			comments := commentRepo.GetPostComments(tc.postId)
+			comments, err := commentRepo.GetPostComments(tc.postId)
+			require.Nil(t, err)
 			require.Equal(t, len(tc.comments), len(comments))
 			for i, comment := range tc.comments {
 				require.Equal(t, &comment, comments[i].(*entities.Comment))
@@ -165,7 +166,7 @@ func TestGetPostComment(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			commentRepo := repo.NewComment()
+			commentRepo := internaldb.NewComment()
 			for _, comment := range tc.comments {
 				_ = commentRepo.Add(&comment.Text, comment.Date, comment.AuthorMail, comment.PostId)
 			}

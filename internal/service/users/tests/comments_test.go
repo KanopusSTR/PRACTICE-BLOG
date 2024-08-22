@@ -44,7 +44,7 @@ func TestWriteComment(t *testing.T) {
 				postMock.GetPostMock.Expect(tc.postId).Return(nil, myErrors.PostNotFound)
 			}
 			if tc.errorMessage == nil {
-				commentMock.AddMock.Expect(&tc.text, tc.date, tc.mail, tc.postId).Return(0)
+				commentMock.AddMock.Expect(&tc.text, tc.date, tc.mail, tc.postId).Return(nil)
 			}
 			err := userS.WriteComment(&tc.text, tc.date, tc.mail, tc.postId)
 
@@ -122,7 +122,7 @@ func TestGetComments(t *testing.T) {
 				postMock.GetPostMock.Expect(tc.postId).Return(nil, myErrors.PostNotFound)
 			}
 			if !errors.Is(tc.errorMessage, myErrors.PostNotFound) {
-				commentMock.GetPostCommentsMock.Expect(tc.postId).Return(nil)
+				commentMock.GetPostCommentsMock.Expect(tc.postId).Return(nil, nil)
 			}
 			_, err := userS.GetComments(tc.postId)
 			require.Equal(t, tc.errorMessage, err)

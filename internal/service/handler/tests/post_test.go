@@ -94,9 +94,9 @@ func TestDeletePost(t *testing.T) {
 			h := handler.New(users, nil)
 			if tc.testName != "funError" {
 				if tc.testName == "getPostError" {
-					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{PostId: tc.postID, AuthorMail: tc.mail}, tc.error)
+					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{Id: tc.postID, AuthorMail: tc.mail}, tc.error)
 				} else {
-					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{PostId: tc.postID, AuthorMail: tc.mail}, nil)
+					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{Id: tc.postID, AuthorMail: tc.mail}, nil)
 					if tc.testName != "noAccessError" {
 						users.DeletePostMock.Expect(tc.postID).Return(tc.error)
 					}
@@ -144,7 +144,7 @@ func TestGetPosts(t *testing.T) {
 			users := mock.NewUsersMock(mc)
 			h := handler.New(users, nil)
 			if tc.testName != "funError" {
-				users.GetPostsMock.Expect().Return(tc.posts)
+				users.GetPostsMock.Expect().Return(tc.posts, nil)
 			}
 			c, m := h.GetPosts()
 			require.Equal(t, tc.code, c)
@@ -172,9 +172,9 @@ func TestGetPost(t *testing.T) {
 			},
 			"a@mail.ru",
 			0,
-			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
+			entities.Post{Id: 0, AuthorMail: "a@mail.ru"},
 			http.StatusOK,
-			models.Response{Message: "success", Data: entities.Post{PostId: 0, AuthorMail: "a@mail.ru"}},
+			models.Response{Message: "success", Data: entities.Post{Id: 0, AuthorMail: "a@mail.ru"}},
 			nil,
 		},
 
@@ -185,7 +185,7 @@ func TestGetPost(t *testing.T) {
 			},
 			"a@mail.ru",
 			1,
-			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
+			entities.Post{Id: 0, AuthorMail: "a@mail.ru"},
 			http.StatusNotFound,
 			models.Response{Message: "getPost error: "},
 			errors.New(""),
@@ -198,7 +198,7 @@ func TestGetPost(t *testing.T) {
 			},
 			"a@mail.ru",
 			0,
-			entities.Post{PostId: 0, AuthorMail: "a@mail.ru"},
+			entities.Post{Id: 0, AuthorMail: "a@mail.ru"},
 			http.StatusBadRequest,
 			models.Response{Message: "postId is required and it must be non-negative"},
 			errors.New(""),
@@ -244,7 +244,7 @@ func TestWritePost(t *testing.T) {
 			"a@mail.ru",
 			0,
 			http.StatusOK,
-			models.Response{Message: "success", Data: 0},
+			models.Response{Message: "success"},
 			nil,
 		},
 
@@ -284,7 +284,7 @@ func TestWritePost(t *testing.T) {
 			users := mock.NewUsersMock(mc)
 			h := handler.New(users, nil)
 			if tc.testName != "funError" {
-				users.WritePostMock.ExpectAuthorMailParam4(tc.mail).Return(tc.postID, tc.error)
+				users.WritePostMock.ExpectAuthorMailParam4(tc.mail).Return(tc.error)
 			}
 			c, m := h.WritePost(tc.fun)
 			require.Equal(t, tc.code, c)
@@ -375,9 +375,9 @@ func TestEditPost(t *testing.T) {
 			h := handler.New(users, nil)
 			if tc.testName != "funError" {
 				if tc.testName == "getPostError" {
-					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{PostId: tc.postID, AuthorMail: tc.mail}, tc.error)
+					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{Id: tc.postID, AuthorMail: tc.mail}, tc.error)
 				} else {
-					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{PostId: tc.postID, AuthorMail: tc.mail}, nil)
+					users.GetPostMock.Expect(tc.postID).Return(&entities.Post{Id: tc.postID, AuthorMail: tc.mail}, nil)
 					if tc.testName != "noAccessError" {
 						users.EditPostMock.ExpectIdParam1(tc.postID).Return(tc.error)
 					}

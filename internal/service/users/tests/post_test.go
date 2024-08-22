@@ -37,9 +37,9 @@ func TestWritePost(t *testing.T) {
 			userS := users.New(nil, postMock, nil)
 
 			if tc.errorMessage == nil {
-				postMock.AddMock.Expect(&tc.header, &tc.body, tc.date, tc.mail).Return(0)
+				postMock.AddMock.Expect(&tc.header, &tc.body, tc.date, tc.mail).Return(nil)
 			}
-			_, err := userS.WritePost(&tc.header, &tc.body, tc.date, tc.mail)
+			err := userS.WritePost(&tc.header, &tc.body, tc.date, tc.mail)
 
 			require.Equal(t, tc.errorMessage, err)
 		})
@@ -133,9 +133,10 @@ func TestGetPosts(t *testing.T) {
 			postMock := minimock2.NewPostMock(mc)
 			userS := users.New(nil, postMock, nil)
 
-			postMock.GetPostsMock.Expect().Return(nil)
+			postMock.GetPostsMock.Expect().Return(nil, nil)
 
-			_ = userS.GetPosts()
+			_, err := userS.GetPosts()
+			require.Nil(t, err)
 			require.Equal(t, tc.errorMessage, nil)
 		})
 	}

@@ -61,7 +61,7 @@ type UsersMock struct {
 	beforeGetPostCounter uint64
 	GetPostMock          mUsersMockGetPost
 
-	funcGetPosts          func() (pa1 []interface{})
+	funcGetPosts          func() (pa1 []interface{}, err error)
 	inspectFuncGetPosts   func()
 	afterGetPostsCounter  uint64
 	beforeGetPostsCounter uint64
@@ -85,7 +85,7 @@ type UsersMock struct {
 	beforeWriteCommentCounter uint64
 	WriteCommentMock          mUsersMockWriteComment
 
-	funcWritePost          func(header *string, body *string, date time.Time, authorMail string) (i1 int, err error)
+	funcWritePost          func(header *string, body *string, date time.Time, authorMail string) (err error)
 	inspectFuncWritePost   func(header *string, body *string, date time.Time, authorMail string)
 	afterWritePostCounter  uint64
 	beforeWritePostCounter uint64
@@ -2347,6 +2347,7 @@ type UsersMockGetPostsExpectation struct {
 // UsersMockGetPostsResults contains results of the Service.GetPosts
 type UsersMockGetPostsResults struct {
 	pa1 []interface{}
+	err error
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -2384,7 +2385,7 @@ func (mmGetPosts *mUsersMockGetPosts) Inspect(f func()) *mUsersMockGetPosts {
 }
 
 // Return sets up results that will be returned by Service.GetPosts
-func (mmGetPosts *mUsersMockGetPosts) Return(pa1 []interface{}) *UsersMock {
+func (mmGetPosts *mUsersMockGetPosts) Return(pa1 []interface{}, err error) *UsersMock {
 	if mmGetPosts.mock.funcGetPosts != nil {
 		mmGetPosts.mock.t.Fatalf("UsersMock.GetPosts mock is already set by Set")
 	}
@@ -2392,12 +2393,12 @@ func (mmGetPosts *mUsersMockGetPosts) Return(pa1 []interface{}) *UsersMock {
 	if mmGetPosts.defaultExpectation == nil {
 		mmGetPosts.defaultExpectation = &UsersMockGetPostsExpectation{mock: mmGetPosts.mock}
 	}
-	mmGetPosts.defaultExpectation.results = &UsersMockGetPostsResults{pa1}
+	mmGetPosts.defaultExpectation.results = &UsersMockGetPostsResults{pa1, err}
 	return mmGetPosts.mock
 }
 
 // Set uses given function f to mock the Service.GetPosts method
-func (mmGetPosts *mUsersMockGetPosts) Set(f func() (pa1 []interface{})) *UsersMock {
+func (mmGetPosts *mUsersMockGetPosts) Set(f func() (pa1 []interface{}, err error)) *UsersMock {
 	if mmGetPosts.defaultExpectation != nil {
 		mmGetPosts.mock.t.Fatalf("Default expectation is already set for the Service.GetPosts method")
 	}
@@ -2431,7 +2432,7 @@ func (mmGetPosts *mUsersMockGetPosts) invocationsDone() bool {
 }
 
 // GetPosts implements users.Service
-func (mmGetPosts *UsersMock) GetPosts() (pa1 []interface{}) {
+func (mmGetPosts *UsersMock) GetPosts() (pa1 []interface{}, err error) {
 	mm_atomic.AddUint64(&mmGetPosts.beforeGetPostsCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetPosts.afterGetPostsCounter, 1)
 
@@ -2446,7 +2447,7 @@ func (mmGetPosts *UsersMock) GetPosts() (pa1 []interface{}) {
 		if mm_results == nil {
 			mmGetPosts.t.Fatal("No results are set for the UsersMock.GetPosts")
 		}
-		return (*mm_results).pa1
+		return (*mm_results).pa1, (*mm_results).err
 	}
 	if mmGetPosts.funcGetPosts != nil {
 		return mmGetPosts.funcGetPosts()
@@ -3562,7 +3563,6 @@ type UsersMockWritePostParamPtrs struct {
 
 // UsersMockWritePostResults contains results of the Service.WritePost
 type UsersMockWritePostResults struct {
-	i1  int
 	err error
 }
 
@@ -3700,7 +3700,7 @@ func (mmWritePost *mUsersMockWritePost) Inspect(f func(header *string, body *str
 }
 
 // Return sets up results that will be returned by Service.WritePost
-func (mmWritePost *mUsersMockWritePost) Return(i1 int, err error) *UsersMock {
+func (mmWritePost *mUsersMockWritePost) Return(err error) *UsersMock {
 	if mmWritePost.mock.funcWritePost != nil {
 		mmWritePost.mock.t.Fatalf("UsersMock.WritePost mock is already set by Set")
 	}
@@ -3708,12 +3708,12 @@ func (mmWritePost *mUsersMockWritePost) Return(i1 int, err error) *UsersMock {
 	if mmWritePost.defaultExpectation == nil {
 		mmWritePost.defaultExpectation = &UsersMockWritePostExpectation{mock: mmWritePost.mock}
 	}
-	mmWritePost.defaultExpectation.results = &UsersMockWritePostResults{i1, err}
+	mmWritePost.defaultExpectation.results = &UsersMockWritePostResults{err}
 	return mmWritePost.mock
 }
 
 // Set uses given function f to mock the Service.WritePost method
-func (mmWritePost *mUsersMockWritePost) Set(f func(header *string, body *string, date time.Time, authorMail string) (i1 int, err error)) *UsersMock {
+func (mmWritePost *mUsersMockWritePost) Set(f func(header *string, body *string, date time.Time, authorMail string) (err error)) *UsersMock {
 	if mmWritePost.defaultExpectation != nil {
 		mmWritePost.mock.t.Fatalf("Default expectation is already set for the Service.WritePost method")
 	}
@@ -3742,8 +3742,8 @@ func (mmWritePost *mUsersMockWritePost) When(header *string, body *string, date 
 }
 
 // Then sets up Service.WritePost return parameters for the expectation previously defined by the When method
-func (e *UsersMockWritePostExpectation) Then(i1 int, err error) *UsersMock {
-	e.results = &UsersMockWritePostResults{i1, err}
+func (e *UsersMockWritePostExpectation) Then(err error) *UsersMock {
+	e.results = &UsersMockWritePostResults{err}
 	return e.mock
 }
 
@@ -3768,7 +3768,7 @@ func (mmWritePost *mUsersMockWritePost) invocationsDone() bool {
 }
 
 // WritePost implements users.Service
-func (mmWritePost *UsersMock) WritePost(header *string, body *string, date time.Time, authorMail string) (i1 int, err error) {
+func (mmWritePost *UsersMock) WritePost(header *string, body *string, date time.Time, authorMail string) (err error) {
 	mm_atomic.AddUint64(&mmWritePost.beforeWritePostCounter, 1)
 	defer mm_atomic.AddUint64(&mmWritePost.afterWritePostCounter, 1)
 
@@ -3786,7 +3786,7 @@ func (mmWritePost *UsersMock) WritePost(header *string, body *string, date time.
 	for _, e := range mmWritePost.WritePostMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
-			return e.results.i1, e.results.err
+			return e.results.err
 		}
 	}
 
@@ -3823,7 +3823,7 @@ func (mmWritePost *UsersMock) WritePost(header *string, body *string, date time.
 		if mm_results == nil {
 			mmWritePost.t.Fatal("No results are set for the UsersMock.WritePost")
 		}
-		return (*mm_results).i1, (*mm_results).err
+		return (*mm_results).err
 	}
 	if mmWritePost.funcWritePost != nil {
 		return mmWritePost.funcWritePost(header, body, date, authorMail)

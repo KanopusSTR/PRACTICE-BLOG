@@ -2,7 +2,7 @@
 
 package minimock
 
-//go:generate minimock -i server/internal/repo.CommentI -o mock_comment.go -n CommentMock -p minimock
+//go:generate minimock -i server/internal/repo.Comment -o mock_comment.go -n CommentMock -p minimock
 
 import (
 	"server/internal/entities"
@@ -14,12 +14,12 @@ import (
 	"github.com/gojuno/minimock/v3"
 )
 
-// CommentMock implements repo.CommentI
+// CommentMock implements repo.Comment
 type CommentMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAdd          func(text *string, date time.Time, authorMail string, postId int) (i1 int)
+	funcAdd          func(text *string, date time.Time, authorMail string, postId int) (err error)
 	inspectFuncAdd   func(text *string, date time.Time, authorMail string, postId int)
 	afterAddCounter  uint64
 	beforeAddCounter uint64
@@ -31,7 +31,7 @@ type CommentMock struct {
 	beforeGetPostCommentCounter uint64
 	GetPostCommentMock          mCommentMockGetPostComment
 
-	funcGetPostComments          func(postId int) (pa1 []interface{})
+	funcGetPostComments          func(postId int) (pa1 []interface{}, err error)
 	inspectFuncGetPostComments   func(postId int)
 	afterGetPostCommentsCounter  uint64
 	beforeGetPostCommentsCounter uint64
@@ -44,7 +44,7 @@ type CommentMock struct {
 	RemoveMock          mCommentMockRemove
 }
 
-// NewCommentMock returns a mock for repo.CommentI
+// NewCommentMock returns a mock for repo.Comment
 func NewCommentMock(t minimock.Tester) *CommentMock {
 	m := &CommentMock{t: t}
 
@@ -81,7 +81,7 @@ type mCommentMockAdd struct {
 	expectedInvocations uint64
 }
 
-// CommentMockAddExpectation specifies expectation struct of the CommentI.Add
+// CommentMockAddExpectation specifies expectation struct of the Comment.Add
 type CommentMockAddExpectation struct {
 	mock      *CommentMock
 	params    *CommentMockAddParams
@@ -90,7 +90,7 @@ type CommentMockAddExpectation struct {
 	Counter   uint64
 }
 
-// CommentMockAddParams contains parameters of the CommentI.Add
+// CommentMockAddParams contains parameters of the Comment.Add
 type CommentMockAddParams struct {
 	text       *string
 	date       time.Time
@@ -98,7 +98,7 @@ type CommentMockAddParams struct {
 	postId     int
 }
 
-// CommentMockAddParamPtrs contains pointers to parameters of the CommentI.Add
+// CommentMockAddParamPtrs contains pointers to parameters of the Comment.Add
 type CommentMockAddParamPtrs struct {
 	text       **string
 	date       *time.Time
@@ -106,9 +106,9 @@ type CommentMockAddParamPtrs struct {
 	postId     *int
 }
 
-// CommentMockAddResults contains results of the CommentI.Add
+// CommentMockAddResults contains results of the Comment.Add
 type CommentMockAddResults struct {
-	i1 int
+	err error
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -121,7 +121,7 @@ func (mmAdd *mCommentMockAdd) Optional() *mCommentMockAdd {
 	return mmAdd
 }
 
-// Expect sets up expected params for CommentI.Add
+// Expect sets up expected params for Comment.Add
 func (mmAdd *mCommentMockAdd) Expect(text *string, date time.Time, authorMail string, postId int) *mCommentMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
@@ -145,7 +145,7 @@ func (mmAdd *mCommentMockAdd) Expect(text *string, date time.Time, authorMail st
 	return mmAdd
 }
 
-// ExpectTextParam1 sets up expected param text for CommentI.Add
+// ExpectTextParam1 sets up expected param text for Comment.Add
 func (mmAdd *mCommentMockAdd) ExpectTextParam1(text *string) *mCommentMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
@@ -167,7 +167,7 @@ func (mmAdd *mCommentMockAdd) ExpectTextParam1(text *string) *mCommentMockAdd {
 	return mmAdd
 }
 
-// ExpectDateParam2 sets up expected param date for CommentI.Add
+// ExpectDateParam2 sets up expected param date for Comment.Add
 func (mmAdd *mCommentMockAdd) ExpectDateParam2(date time.Time) *mCommentMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
@@ -189,7 +189,7 @@ func (mmAdd *mCommentMockAdd) ExpectDateParam2(date time.Time) *mCommentMockAdd 
 	return mmAdd
 }
 
-// ExpectAuthorMailParam3 sets up expected param authorMail for CommentI.Add
+// ExpectAuthorMailParam3 sets up expected param authorMail for Comment.Add
 func (mmAdd *mCommentMockAdd) ExpectAuthorMailParam3(authorMail string) *mCommentMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
@@ -211,7 +211,7 @@ func (mmAdd *mCommentMockAdd) ExpectAuthorMailParam3(authorMail string) *mCommen
 	return mmAdd
 }
 
-// ExpectPostIdParam4 sets up expected param postId for CommentI.Add
+// ExpectPostIdParam4 sets up expected param postId for Comment.Add
 func (mmAdd *mCommentMockAdd) ExpectPostIdParam4(postId int) *mCommentMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
@@ -233,7 +233,7 @@ func (mmAdd *mCommentMockAdd) ExpectPostIdParam4(postId int) *mCommentMockAdd {
 	return mmAdd
 }
 
-// Inspect accepts an inspector function that has same arguments as the CommentI.Add
+// Inspect accepts an inspector function that has same arguments as the Comment.Add
 func (mmAdd *mCommentMockAdd) Inspect(f func(text *string, date time.Time, authorMail string, postId int)) *mCommentMockAdd {
 	if mmAdd.mock.inspectFuncAdd != nil {
 		mmAdd.mock.t.Fatalf("Inspect function is already set for CommentMock.Add")
@@ -244,8 +244,8 @@ func (mmAdd *mCommentMockAdd) Inspect(f func(text *string, date time.Time, autho
 	return mmAdd
 }
 
-// Return sets up results that will be returned by CommentI.Add
-func (mmAdd *mCommentMockAdd) Return(i1 int) *CommentMock {
+// Return sets up results that will be returned by Comment.Add
+func (mmAdd *mCommentMockAdd) Return(err error) *CommentMock {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("CommentMock.Add mock is already set by Set")
 	}
@@ -253,25 +253,25 @@ func (mmAdd *mCommentMockAdd) Return(i1 int) *CommentMock {
 	if mmAdd.defaultExpectation == nil {
 		mmAdd.defaultExpectation = &CommentMockAddExpectation{mock: mmAdd.mock}
 	}
-	mmAdd.defaultExpectation.results = &CommentMockAddResults{i1}
+	mmAdd.defaultExpectation.results = &CommentMockAddResults{err}
 	return mmAdd.mock
 }
 
-// Set uses given function f to mock the CommentI.Add method
-func (mmAdd *mCommentMockAdd) Set(f func(text *string, date time.Time, authorMail string, postId int) (i1 int)) *CommentMock {
+// Set uses given function f to mock the Comment.Add method
+func (mmAdd *mCommentMockAdd) Set(f func(text *string, date time.Time, authorMail string, postId int) (err error)) *CommentMock {
 	if mmAdd.defaultExpectation != nil {
-		mmAdd.mock.t.Fatalf("Default expectation is already set for the CommentI.Add method")
+		mmAdd.mock.t.Fatalf("Default expectation is already set for the Comment.Add method")
 	}
 
 	if len(mmAdd.expectations) > 0 {
-		mmAdd.mock.t.Fatalf("Some expectations are already set for the CommentI.Add method")
+		mmAdd.mock.t.Fatalf("Some expectations are already set for the Comment.Add method")
 	}
 
 	mmAdd.mock.funcAdd = f
 	return mmAdd.mock
 }
 
-// When sets expectation for the CommentI.Add which will trigger the result defined by the following
+// When sets expectation for the Comment.Add which will trigger the result defined by the following
 // Then helper
 func (mmAdd *mCommentMockAdd) When(text *string, date time.Time, authorMail string, postId int) *CommentMockAddExpectation {
 	if mmAdd.mock.funcAdd != nil {
@@ -286,13 +286,13 @@ func (mmAdd *mCommentMockAdd) When(text *string, date time.Time, authorMail stri
 	return expectation
 }
 
-// Then sets up CommentI.Add return parameters for the expectation previously defined by the When method
-func (e *CommentMockAddExpectation) Then(i1 int) *CommentMock {
-	e.results = &CommentMockAddResults{i1}
+// Then sets up Comment.Add return parameters for the expectation previously defined by the When method
+func (e *CommentMockAddExpectation) Then(err error) *CommentMock {
+	e.results = &CommentMockAddResults{err}
 	return e.mock
 }
 
-// Times sets number of times CommentI.Add should be invoked
+// Times sets number of times Comment.Add should be invoked
 func (mmAdd *mCommentMockAdd) Times(n uint64) *mCommentMockAdd {
 	if n == 0 {
 		mmAdd.mock.t.Fatalf("Times of CommentMock.Add mock can not be zero")
@@ -312,8 +312,8 @@ func (mmAdd *mCommentMockAdd) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Add implements repo.CommentI
-func (mmAdd *CommentMock) Add(text *string, date time.Time, authorMail string, postId int) (i1 int) {
+// Add implements repo.Comment
+func (mmAdd *CommentMock) Add(text *string, date time.Time, authorMail string, postId int) (err error) {
 	mm_atomic.AddUint64(&mmAdd.beforeAddCounter, 1)
 	defer mm_atomic.AddUint64(&mmAdd.afterAddCounter, 1)
 
@@ -331,7 +331,7 @@ func (mmAdd *CommentMock) Add(text *string, date time.Time, authorMail string, p
 	for _, e := range mmAdd.AddMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
-			return e.results.i1
+			return e.results.err
 		}
 	}
 
@@ -368,7 +368,7 @@ func (mmAdd *CommentMock) Add(text *string, date time.Time, authorMail string, p
 		if mm_results == nil {
 			mmAdd.t.Fatal("No results are set for the CommentMock.Add")
 		}
-		return (*mm_results).i1
+		return (*mm_results).err
 	}
 	if mmAdd.funcAdd != nil {
 		return mmAdd.funcAdd(text, date, authorMail, postId)
@@ -457,7 +457,7 @@ type mCommentMockGetPostComment struct {
 	expectedInvocations uint64
 }
 
-// CommentMockGetPostCommentExpectation specifies expectation struct of the CommentI.GetPostComment
+// CommentMockGetPostCommentExpectation specifies expectation struct of the Comment.GetPostComment
 type CommentMockGetPostCommentExpectation struct {
 	mock      *CommentMock
 	params    *CommentMockGetPostCommentParams
@@ -466,19 +466,19 @@ type CommentMockGetPostCommentExpectation struct {
 	Counter   uint64
 }
 
-// CommentMockGetPostCommentParams contains parameters of the CommentI.GetPostComment
+// CommentMockGetPostCommentParams contains parameters of the Comment.GetPostComment
 type CommentMockGetPostCommentParams struct {
 	postId    int
 	commentId int
 }
 
-// CommentMockGetPostCommentParamPtrs contains pointers to parameters of the CommentI.GetPostComment
+// CommentMockGetPostCommentParamPtrs contains pointers to parameters of the Comment.GetPostComment
 type CommentMockGetPostCommentParamPtrs struct {
 	postId    *int
 	commentId *int
 }
 
-// CommentMockGetPostCommentResults contains results of the CommentI.GetPostComment
+// CommentMockGetPostCommentResults contains results of the Comment.GetPostComment
 type CommentMockGetPostCommentResults struct {
 	cp1 *entities.Comment
 	err error
@@ -494,7 +494,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) Optional() *mCommentMockGetP
 	return mmGetPostComment
 }
 
-// Expect sets up expected params for CommentI.GetPostComment
+// Expect sets up expected params for Comment.GetPostComment
 func (mmGetPostComment *mCommentMockGetPostComment) Expect(postId int, commentId int) *mCommentMockGetPostComment {
 	if mmGetPostComment.mock.funcGetPostComment != nil {
 		mmGetPostComment.mock.t.Fatalf("CommentMock.GetPostComment mock is already set by Set")
@@ -518,7 +518,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) Expect(postId int, commentId
 	return mmGetPostComment
 }
 
-// ExpectPostIdParam1 sets up expected param postId for CommentI.GetPostComment
+// ExpectPostIdParam1 sets up expected param postId for Comment.GetPostComment
 func (mmGetPostComment *mCommentMockGetPostComment) ExpectPostIdParam1(postId int) *mCommentMockGetPostComment {
 	if mmGetPostComment.mock.funcGetPostComment != nil {
 		mmGetPostComment.mock.t.Fatalf("CommentMock.GetPostComment mock is already set by Set")
@@ -540,7 +540,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) ExpectPostIdParam1(postId in
 	return mmGetPostComment
 }
 
-// ExpectCommentIdParam2 sets up expected param commentId for CommentI.GetPostComment
+// ExpectCommentIdParam2 sets up expected param commentId for Comment.GetPostComment
 func (mmGetPostComment *mCommentMockGetPostComment) ExpectCommentIdParam2(commentId int) *mCommentMockGetPostComment {
 	if mmGetPostComment.mock.funcGetPostComment != nil {
 		mmGetPostComment.mock.t.Fatalf("CommentMock.GetPostComment mock is already set by Set")
@@ -562,7 +562,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) ExpectCommentIdParam2(commen
 	return mmGetPostComment
 }
 
-// Inspect accepts an inspector function that has same arguments as the CommentI.GetPostComment
+// Inspect accepts an inspector function that has same arguments as the Comment.GetPostComment
 func (mmGetPostComment *mCommentMockGetPostComment) Inspect(f func(postId int, commentId int)) *mCommentMockGetPostComment {
 	if mmGetPostComment.mock.inspectFuncGetPostComment != nil {
 		mmGetPostComment.mock.t.Fatalf("Inspect function is already set for CommentMock.GetPostComment")
@@ -573,7 +573,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) Inspect(f func(postId int, c
 	return mmGetPostComment
 }
 
-// Return sets up results that will be returned by CommentI.GetPostComment
+// Return sets up results that will be returned by Comment.GetPostComment
 func (mmGetPostComment *mCommentMockGetPostComment) Return(cp1 *entities.Comment, err error) *CommentMock {
 	if mmGetPostComment.mock.funcGetPostComment != nil {
 		mmGetPostComment.mock.t.Fatalf("CommentMock.GetPostComment mock is already set by Set")
@@ -586,21 +586,21 @@ func (mmGetPostComment *mCommentMockGetPostComment) Return(cp1 *entities.Comment
 	return mmGetPostComment.mock
 }
 
-// Set uses given function f to mock the CommentI.GetPostComment method
+// Set uses given function f to mock the Comment.GetPostComment method
 func (mmGetPostComment *mCommentMockGetPostComment) Set(f func(postId int, commentId int) (cp1 *entities.Comment, err error)) *CommentMock {
 	if mmGetPostComment.defaultExpectation != nil {
-		mmGetPostComment.mock.t.Fatalf("Default expectation is already set for the CommentI.GetPostComment method")
+		mmGetPostComment.mock.t.Fatalf("Default expectation is already set for the Comment.GetPostComment method")
 	}
 
 	if len(mmGetPostComment.expectations) > 0 {
-		mmGetPostComment.mock.t.Fatalf("Some expectations are already set for the CommentI.GetPostComment method")
+		mmGetPostComment.mock.t.Fatalf("Some expectations are already set for the Comment.GetPostComment method")
 	}
 
 	mmGetPostComment.mock.funcGetPostComment = f
 	return mmGetPostComment.mock
 }
 
-// When sets expectation for the CommentI.GetPostComment which will trigger the result defined by the following
+// When sets expectation for the Comment.GetPostComment which will trigger the result defined by the following
 // Then helper
 func (mmGetPostComment *mCommentMockGetPostComment) When(postId int, commentId int) *CommentMockGetPostCommentExpectation {
 	if mmGetPostComment.mock.funcGetPostComment != nil {
@@ -615,13 +615,13 @@ func (mmGetPostComment *mCommentMockGetPostComment) When(postId int, commentId i
 	return expectation
 }
 
-// Then sets up CommentI.GetPostComment return parameters for the expectation previously defined by the When method
+// Then sets up Comment.GetPostComment return parameters for the expectation previously defined by the When method
 func (e *CommentMockGetPostCommentExpectation) Then(cp1 *entities.Comment, err error) *CommentMock {
 	e.results = &CommentMockGetPostCommentResults{cp1, err}
 	return e.mock
 }
 
-// Times sets number of times CommentI.GetPostComment should be invoked
+// Times sets number of times Comment.GetPostComment should be invoked
 func (mmGetPostComment *mCommentMockGetPostComment) Times(n uint64) *mCommentMockGetPostComment {
 	if n == 0 {
 		mmGetPostComment.mock.t.Fatalf("Times of CommentMock.GetPostComment mock can not be zero")
@@ -641,7 +641,7 @@ func (mmGetPostComment *mCommentMockGetPostComment) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetPostComment implements repo.CommentI
+// GetPostComment implements repo.Comment
 func (mmGetPostComment *CommentMock) GetPostComment(postId int, commentId int) (cp1 *entities.Comment, err error) {
 	mm_atomic.AddUint64(&mmGetPostComment.beforeGetPostCommentCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetPostComment.afterGetPostCommentCounter, 1)
@@ -778,7 +778,7 @@ type mCommentMockGetPostComments struct {
 	expectedInvocations uint64
 }
 
-// CommentMockGetPostCommentsExpectation specifies expectation struct of the CommentI.GetPostComments
+// CommentMockGetPostCommentsExpectation specifies expectation struct of the Comment.GetPostComments
 type CommentMockGetPostCommentsExpectation struct {
 	mock      *CommentMock
 	params    *CommentMockGetPostCommentsParams
@@ -787,19 +787,20 @@ type CommentMockGetPostCommentsExpectation struct {
 	Counter   uint64
 }
 
-// CommentMockGetPostCommentsParams contains parameters of the CommentI.GetPostComments
+// CommentMockGetPostCommentsParams contains parameters of the Comment.GetPostComments
 type CommentMockGetPostCommentsParams struct {
 	postId int
 }
 
-// CommentMockGetPostCommentsParamPtrs contains pointers to parameters of the CommentI.GetPostComments
+// CommentMockGetPostCommentsParamPtrs contains pointers to parameters of the Comment.GetPostComments
 type CommentMockGetPostCommentsParamPtrs struct {
 	postId *int
 }
 
-// CommentMockGetPostCommentsResults contains results of the CommentI.GetPostComments
+// CommentMockGetPostCommentsResults contains results of the Comment.GetPostComments
 type CommentMockGetPostCommentsResults struct {
 	pa1 []interface{}
+	err error
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -812,7 +813,7 @@ func (mmGetPostComments *mCommentMockGetPostComments) Optional() *mCommentMockGe
 	return mmGetPostComments
 }
 
-// Expect sets up expected params for CommentI.GetPostComments
+// Expect sets up expected params for Comment.GetPostComments
 func (mmGetPostComments *mCommentMockGetPostComments) Expect(postId int) *mCommentMockGetPostComments {
 	if mmGetPostComments.mock.funcGetPostComments != nil {
 		mmGetPostComments.mock.t.Fatalf("CommentMock.GetPostComments mock is already set by Set")
@@ -836,7 +837,7 @@ func (mmGetPostComments *mCommentMockGetPostComments) Expect(postId int) *mComme
 	return mmGetPostComments
 }
 
-// ExpectPostIdParam1 sets up expected param postId for CommentI.GetPostComments
+// ExpectPostIdParam1 sets up expected param postId for Comment.GetPostComments
 func (mmGetPostComments *mCommentMockGetPostComments) ExpectPostIdParam1(postId int) *mCommentMockGetPostComments {
 	if mmGetPostComments.mock.funcGetPostComments != nil {
 		mmGetPostComments.mock.t.Fatalf("CommentMock.GetPostComments mock is already set by Set")
@@ -858,7 +859,7 @@ func (mmGetPostComments *mCommentMockGetPostComments) ExpectPostIdParam1(postId 
 	return mmGetPostComments
 }
 
-// Inspect accepts an inspector function that has same arguments as the CommentI.GetPostComments
+// Inspect accepts an inspector function that has same arguments as the Comment.GetPostComments
 func (mmGetPostComments *mCommentMockGetPostComments) Inspect(f func(postId int)) *mCommentMockGetPostComments {
 	if mmGetPostComments.mock.inspectFuncGetPostComments != nil {
 		mmGetPostComments.mock.t.Fatalf("Inspect function is already set for CommentMock.GetPostComments")
@@ -869,8 +870,8 @@ func (mmGetPostComments *mCommentMockGetPostComments) Inspect(f func(postId int)
 	return mmGetPostComments
 }
 
-// Return sets up results that will be returned by CommentI.GetPostComments
-func (mmGetPostComments *mCommentMockGetPostComments) Return(pa1 []interface{}) *CommentMock {
+// Return sets up results that will be returned by Comment.GetPostComments
+func (mmGetPostComments *mCommentMockGetPostComments) Return(pa1 []interface{}, err error) *CommentMock {
 	if mmGetPostComments.mock.funcGetPostComments != nil {
 		mmGetPostComments.mock.t.Fatalf("CommentMock.GetPostComments mock is already set by Set")
 	}
@@ -878,25 +879,25 @@ func (mmGetPostComments *mCommentMockGetPostComments) Return(pa1 []interface{}) 
 	if mmGetPostComments.defaultExpectation == nil {
 		mmGetPostComments.defaultExpectation = &CommentMockGetPostCommentsExpectation{mock: mmGetPostComments.mock}
 	}
-	mmGetPostComments.defaultExpectation.results = &CommentMockGetPostCommentsResults{pa1}
+	mmGetPostComments.defaultExpectation.results = &CommentMockGetPostCommentsResults{pa1, err}
 	return mmGetPostComments.mock
 }
 
-// Set uses given function f to mock the CommentI.GetPostComments method
-func (mmGetPostComments *mCommentMockGetPostComments) Set(f func(postId int) (pa1 []interface{})) *CommentMock {
+// Set uses given function f to mock the Comment.GetPostComments method
+func (mmGetPostComments *mCommentMockGetPostComments) Set(f func(postId int) (pa1 []interface{}, err error)) *CommentMock {
 	if mmGetPostComments.defaultExpectation != nil {
-		mmGetPostComments.mock.t.Fatalf("Default expectation is already set for the CommentI.GetPostComments method")
+		mmGetPostComments.mock.t.Fatalf("Default expectation is already set for the Comment.GetPostComments method")
 	}
 
 	if len(mmGetPostComments.expectations) > 0 {
-		mmGetPostComments.mock.t.Fatalf("Some expectations are already set for the CommentI.GetPostComments method")
+		mmGetPostComments.mock.t.Fatalf("Some expectations are already set for the Comment.GetPostComments method")
 	}
 
 	mmGetPostComments.mock.funcGetPostComments = f
 	return mmGetPostComments.mock
 }
 
-// When sets expectation for the CommentI.GetPostComments which will trigger the result defined by the following
+// When sets expectation for the Comment.GetPostComments which will trigger the result defined by the following
 // Then helper
 func (mmGetPostComments *mCommentMockGetPostComments) When(postId int) *CommentMockGetPostCommentsExpectation {
 	if mmGetPostComments.mock.funcGetPostComments != nil {
@@ -911,13 +912,13 @@ func (mmGetPostComments *mCommentMockGetPostComments) When(postId int) *CommentM
 	return expectation
 }
 
-// Then sets up CommentI.GetPostComments return parameters for the expectation previously defined by the When method
-func (e *CommentMockGetPostCommentsExpectation) Then(pa1 []interface{}) *CommentMock {
-	e.results = &CommentMockGetPostCommentsResults{pa1}
+// Then sets up Comment.GetPostComments return parameters for the expectation previously defined by the When method
+func (e *CommentMockGetPostCommentsExpectation) Then(pa1 []interface{}, err error) *CommentMock {
+	e.results = &CommentMockGetPostCommentsResults{pa1, err}
 	return e.mock
 }
 
-// Times sets number of times CommentI.GetPostComments should be invoked
+// Times sets number of times Comment.GetPostComments should be invoked
 func (mmGetPostComments *mCommentMockGetPostComments) Times(n uint64) *mCommentMockGetPostComments {
 	if n == 0 {
 		mmGetPostComments.mock.t.Fatalf("Times of CommentMock.GetPostComments mock can not be zero")
@@ -937,8 +938,8 @@ func (mmGetPostComments *mCommentMockGetPostComments) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetPostComments implements repo.CommentI
-func (mmGetPostComments *CommentMock) GetPostComments(postId int) (pa1 []interface{}) {
+// GetPostComments implements repo.Comment
+func (mmGetPostComments *CommentMock) GetPostComments(postId int) (pa1 []interface{}, err error) {
 	mm_atomic.AddUint64(&mmGetPostComments.beforeGetPostCommentsCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetPostComments.afterGetPostCommentsCounter, 1)
 
@@ -956,7 +957,7 @@ func (mmGetPostComments *CommentMock) GetPostComments(postId int) (pa1 []interfa
 	for _, e := range mmGetPostComments.GetPostCommentsMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
-			return e.results.pa1
+			return e.results.pa1, e.results.err
 		}
 	}
 
@@ -981,7 +982,7 @@ func (mmGetPostComments *CommentMock) GetPostComments(postId int) (pa1 []interfa
 		if mm_results == nil {
 			mmGetPostComments.t.Fatal("No results are set for the CommentMock.GetPostComments")
 		}
-		return (*mm_results).pa1
+		return (*mm_results).pa1, (*mm_results).err
 	}
 	if mmGetPostComments.funcGetPostComments != nil {
 		return mmGetPostComments.funcGetPostComments(postId)
@@ -1070,7 +1071,7 @@ type mCommentMockRemove struct {
 	expectedInvocations uint64
 }
 
-// CommentMockRemoveExpectation specifies expectation struct of the CommentI.Remove
+// CommentMockRemoveExpectation specifies expectation struct of the Comment.Remove
 type CommentMockRemoveExpectation struct {
 	mock      *CommentMock
 	params    *CommentMockRemoveParams
@@ -1079,19 +1080,19 @@ type CommentMockRemoveExpectation struct {
 	Counter   uint64
 }
 
-// CommentMockRemoveParams contains parameters of the CommentI.Remove
+// CommentMockRemoveParams contains parameters of the Comment.Remove
 type CommentMockRemoveParams struct {
 	postId    int
 	commentId int
 }
 
-// CommentMockRemoveParamPtrs contains pointers to parameters of the CommentI.Remove
+// CommentMockRemoveParamPtrs contains pointers to parameters of the Comment.Remove
 type CommentMockRemoveParamPtrs struct {
 	postId    *int
 	commentId *int
 }
 
-// CommentMockRemoveResults contains results of the CommentI.Remove
+// CommentMockRemoveResults contains results of the Comment.Remove
 type CommentMockRemoveResults struct {
 	err error
 }
@@ -1106,7 +1107,7 @@ func (mmRemove *mCommentMockRemove) Optional() *mCommentMockRemove {
 	return mmRemove
 }
 
-// Expect sets up expected params for CommentI.Remove
+// Expect sets up expected params for Comment.Remove
 func (mmRemove *mCommentMockRemove) Expect(postId int, commentId int) *mCommentMockRemove {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("CommentMock.Remove mock is already set by Set")
@@ -1130,7 +1131,7 @@ func (mmRemove *mCommentMockRemove) Expect(postId int, commentId int) *mCommentM
 	return mmRemove
 }
 
-// ExpectPostIdParam1 sets up expected param postId for CommentI.Remove
+// ExpectPostIdParam1 sets up expected param postId for Comment.Remove
 func (mmRemove *mCommentMockRemove) ExpectPostIdParam1(postId int) *mCommentMockRemove {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("CommentMock.Remove mock is already set by Set")
@@ -1152,7 +1153,7 @@ func (mmRemove *mCommentMockRemove) ExpectPostIdParam1(postId int) *mCommentMock
 	return mmRemove
 }
 
-// ExpectCommentIdParam2 sets up expected param commentId for CommentI.Remove
+// ExpectCommentIdParam2 sets up expected param commentId for Comment.Remove
 func (mmRemove *mCommentMockRemove) ExpectCommentIdParam2(commentId int) *mCommentMockRemove {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("CommentMock.Remove mock is already set by Set")
@@ -1174,7 +1175,7 @@ func (mmRemove *mCommentMockRemove) ExpectCommentIdParam2(commentId int) *mComme
 	return mmRemove
 }
 
-// Inspect accepts an inspector function that has same arguments as the CommentI.Remove
+// Inspect accepts an inspector function that has same arguments as the Comment.Remove
 func (mmRemove *mCommentMockRemove) Inspect(f func(postId int, commentId int)) *mCommentMockRemove {
 	if mmRemove.mock.inspectFuncRemove != nil {
 		mmRemove.mock.t.Fatalf("Inspect function is already set for CommentMock.Remove")
@@ -1185,7 +1186,7 @@ func (mmRemove *mCommentMockRemove) Inspect(f func(postId int, commentId int)) *
 	return mmRemove
 }
 
-// Return sets up results that will be returned by CommentI.Remove
+// Return sets up results that will be returned by Comment.Remove
 func (mmRemove *mCommentMockRemove) Return(err error) *CommentMock {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("CommentMock.Remove mock is already set by Set")
@@ -1198,21 +1199,21 @@ func (mmRemove *mCommentMockRemove) Return(err error) *CommentMock {
 	return mmRemove.mock
 }
 
-// Set uses given function f to mock the CommentI.Remove method
+// Set uses given function f to mock the Comment.Remove method
 func (mmRemove *mCommentMockRemove) Set(f func(postId int, commentId int) (err error)) *CommentMock {
 	if mmRemove.defaultExpectation != nil {
-		mmRemove.mock.t.Fatalf("Default expectation is already set for the CommentI.Remove method")
+		mmRemove.mock.t.Fatalf("Default expectation is already set for the Comment.Remove method")
 	}
 
 	if len(mmRemove.expectations) > 0 {
-		mmRemove.mock.t.Fatalf("Some expectations are already set for the CommentI.Remove method")
+		mmRemove.mock.t.Fatalf("Some expectations are already set for the Comment.Remove method")
 	}
 
 	mmRemove.mock.funcRemove = f
 	return mmRemove.mock
 }
 
-// When sets expectation for the CommentI.Remove which will trigger the result defined by the following
+// When sets expectation for the Comment.Remove which will trigger the result defined by the following
 // Then helper
 func (mmRemove *mCommentMockRemove) When(postId int, commentId int) *CommentMockRemoveExpectation {
 	if mmRemove.mock.funcRemove != nil {
@@ -1227,13 +1228,13 @@ func (mmRemove *mCommentMockRemove) When(postId int, commentId int) *CommentMock
 	return expectation
 }
 
-// Then sets up CommentI.Remove return parameters for the expectation previously defined by the When method
+// Then sets up Comment.Remove return parameters for the expectation previously defined by the When method
 func (e *CommentMockRemoveExpectation) Then(err error) *CommentMock {
 	e.results = &CommentMockRemoveResults{err}
 	return e.mock
 }
 
-// Times sets number of times CommentI.Remove should be invoked
+// Times sets number of times Comment.Remove should be invoked
 func (mmRemove *mCommentMockRemove) Times(n uint64) *mCommentMockRemove {
 	if n == 0 {
 		mmRemove.mock.t.Fatalf("Times of CommentMock.Remove mock can not be zero")
@@ -1253,7 +1254,7 @@ func (mmRemove *mCommentMockRemove) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Remove implements repo.CommentI
+// Remove implements repo.Comment
 func (mmRemove *CommentMock) Remove(postId int, commentId int) (err error) {
 	mm_atomic.AddUint64(&mmRemove.beforeRemoveCounter, 1)
 	defer mm_atomic.AddUint64(&mmRemove.afterRemoveCounter, 1)

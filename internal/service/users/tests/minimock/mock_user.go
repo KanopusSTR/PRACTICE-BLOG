@@ -2,7 +2,7 @@
 
 package minimock
 
-//go:generate minimock -i server/internal/repo.UserI -o mock_user.go -n UserMock -p minimock
+//go:generate minimock -i server/internal/repo.User -o mock_user.go -n UserMock -p minimock
 
 import (
 	"server/internal/entities"
@@ -13,25 +13,25 @@ import (
 	"github.com/gojuno/minimock/v3"
 )
 
-// UserMock implements repo.UserI
+// UserMock implements repo.User
 type UserMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAddUser          func(user entities.User) (err error)
-	inspectFuncAddUser   func(user entities.User)
-	afterAddUserCounter  uint64
-	beforeAddUserCounter uint64
-	AddUserMock          mUserMockAddUser
+	funcAdd          func(user entities.User) (err error)
+	inspectFuncAdd   func(user entities.User)
+	afterAddCounter  uint64
+	beforeAddCounter uint64
+	AddMock          mUserMockAdd
 
-	funcGetUser          func(mail string) (up1 *entities.User, err error)
-	inspectFuncGetUser   func(mail string)
-	afterGetUserCounter  uint64
-	beforeGetUserCounter uint64
-	GetUserMock          mUserMockGetUser
+	funcGet          func(mail string) (up1 *entities.User, err error)
+	inspectFuncGet   func(mail string)
+	afterGetCounter  uint64
+	beforeGetCounter uint64
+	GetMock          mUserMockGet
 }
 
-// NewUserMock returns a mock for repo.UserI
+// NewUserMock returns a mock for repo.User
 func NewUserMock(t minimock.Tester) *UserMock {
 	m := &UserMock{t: t}
 
@@ -39,50 +39,50 @@ func NewUserMock(t minimock.Tester) *UserMock {
 		controller.RegisterMocker(m)
 	}
 
-	m.AddUserMock = mUserMockAddUser{mock: m}
-	m.AddUserMock.callArgs = []*UserMockAddUserParams{}
+	m.AddMock = mUserMockAdd{mock: m}
+	m.AddMock.callArgs = []*UserMockAddParams{}
 
-	m.GetUserMock = mUserMockGetUser{mock: m}
-	m.GetUserMock.callArgs = []*UserMockGetUserParams{}
+	m.GetMock = mUserMockGet{mock: m}
+	m.GetMock.callArgs = []*UserMockGetParams{}
 
 	t.Cleanup(m.MinimockFinish)
 
 	return m
 }
 
-type mUserMockAddUser struct {
+type mUserMockAdd struct {
 	optional           bool
 	mock               *UserMock
-	defaultExpectation *UserMockAddUserExpectation
-	expectations       []*UserMockAddUserExpectation
+	defaultExpectation *UserMockAddExpectation
+	expectations       []*UserMockAddExpectation
 
-	callArgs []*UserMockAddUserParams
+	callArgs []*UserMockAddParams
 	mutex    sync.RWMutex
 
 	expectedInvocations uint64
 }
 
-// UserMockAddUserExpectation specifies expectation struct of the UserI.Add
-type UserMockAddUserExpectation struct {
+// UserMockAddExpectation specifies expectation struct of the User.Add
+type UserMockAddExpectation struct {
 	mock      *UserMock
-	params    *UserMockAddUserParams
-	paramPtrs *UserMockAddUserParamPtrs
-	results   *UserMockAddUserResults
+	params    *UserMockAddParams
+	paramPtrs *UserMockAddParamPtrs
+	results   *UserMockAddResults
 	Counter   uint64
 }
 
-// UserMockAddUserParams contains parameters of the UserI.Add
-type UserMockAddUserParams struct {
+// UserMockAddParams contains parameters of the User.Add
+type UserMockAddParams struct {
 	user entities.User
 }
 
-// UserMockAddUserParamPtrs contains pointers to parameters of the UserI.Add
-type UserMockAddUserParamPtrs struct {
+// UserMockAddParamPtrs contains pointers to parameters of the User.Add
+type UserMockAddParamPtrs struct {
 	user *entities.User
 }
 
-// UserMockAddUserResults contains results of the UserI.Add
-type UserMockAddUserResults struct {
+// UserMockAddResults contains results of the User.Add
+type UserMockAddResults struct {
 	err error
 }
 
@@ -91,290 +91,290 @@ type UserMockAddUserResults struct {
 // Optional() makes method check to work in '0 or more' mode.
 // It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
 // catch the problems when the expected method call is totally skipped during test run.
-func (mmAddUser *mUserMockAddUser) Optional() *mUserMockAddUser {
-	mmAddUser.optional = true
-	return mmAddUser
+func (mmAdd *mUserMockAdd) Optional() *mUserMockAdd {
+	mmAdd.optional = true
+	return mmAdd
 }
 
-// Expect sets up expected params for UserI.Add
-func (mmAddUser *mUserMockAddUser) Expect(user entities.User) *mUserMockAddUser {
-	if mmAddUser.mock.funcAddUser != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by Set")
+// Expect sets up expected params for User.Add
+func (mmAdd *mUserMockAdd) Expect(user entities.User) *mUserMockAdd {
+	if mmAdd.mock.funcAdd != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by Set")
 	}
 
-	if mmAddUser.defaultExpectation == nil {
-		mmAddUser.defaultExpectation = &UserMockAddUserExpectation{}
+	if mmAdd.defaultExpectation == nil {
+		mmAdd.defaultExpectation = &UserMockAddExpectation{}
 	}
 
-	if mmAddUser.defaultExpectation.paramPtrs != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by ExpectParams functions")
+	if mmAdd.defaultExpectation.paramPtrs != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by ExpectParams functions")
 	}
 
-	mmAddUser.defaultExpectation.params = &UserMockAddUserParams{user}
-	for _, e := range mmAddUser.expectations {
-		if minimock.Equal(e.params, mmAddUser.defaultExpectation.params) {
-			mmAddUser.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmAddUser.defaultExpectation.params)
+	mmAdd.defaultExpectation.params = &UserMockAddParams{user}
+	for _, e := range mmAdd.expectations {
+		if minimock.Equal(e.params, mmAdd.defaultExpectation.params) {
+			mmAdd.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmAdd.defaultExpectation.params)
 		}
 	}
 
-	return mmAddUser
+	return mmAdd
 }
 
-// ExpectUserParam1 sets up expected param user for UserI.Add
-func (mmAddUser *mUserMockAddUser) ExpectUserParam1(user entities.User) *mUserMockAddUser {
-	if mmAddUser.mock.funcAddUser != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by Set")
+// ExpectUserParam1 sets up expected param user for User.Add
+func (mmAdd *mUserMockAdd) ExpectUserParam1(user entities.User) *mUserMockAdd {
+	if mmAdd.mock.funcAdd != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by Set")
 	}
 
-	if mmAddUser.defaultExpectation == nil {
-		mmAddUser.defaultExpectation = &UserMockAddUserExpectation{}
+	if mmAdd.defaultExpectation == nil {
+		mmAdd.defaultExpectation = &UserMockAddExpectation{}
 	}
 
-	if mmAddUser.defaultExpectation.params != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by Expect")
+	if mmAdd.defaultExpectation.params != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by Expect")
 	}
 
-	if mmAddUser.defaultExpectation.paramPtrs == nil {
-		mmAddUser.defaultExpectation.paramPtrs = &UserMockAddUserParamPtrs{}
+	if mmAdd.defaultExpectation.paramPtrs == nil {
+		mmAdd.defaultExpectation.paramPtrs = &UserMockAddParamPtrs{}
 	}
-	mmAddUser.defaultExpectation.paramPtrs.user = &user
+	mmAdd.defaultExpectation.paramPtrs.user = &user
 
-	return mmAddUser
+	return mmAdd
 }
 
-// Inspect accepts an inspector function that has same arguments as the UserI.Add
-func (mmAddUser *mUserMockAddUser) Inspect(f func(user entities.User)) *mUserMockAddUser {
-	if mmAddUser.mock.inspectFuncAddUser != nil {
-		mmAddUser.mock.t.Fatalf("Inspect function is already set for UserMock.Add")
+// Inspect accepts an inspector function that has same arguments as the User.Add
+func (mmAdd *mUserMockAdd) Inspect(f func(user entities.User)) *mUserMockAdd {
+	if mmAdd.mock.inspectFuncAdd != nil {
+		mmAdd.mock.t.Fatalf("Inspect function is already set for UserMock.Add")
 	}
 
-	mmAddUser.mock.inspectFuncAddUser = f
+	mmAdd.mock.inspectFuncAdd = f
 
-	return mmAddUser
+	return mmAdd
 }
 
-// Return sets up results that will be returned by UserI.Add
-func (mmAddUser *mUserMockAddUser) Return(err error) *UserMock {
-	if mmAddUser.mock.funcAddUser != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by Set")
+// Return sets up results that will be returned by User.Add
+func (mmAdd *mUserMockAdd) Return(err error) *UserMock {
+	if mmAdd.mock.funcAdd != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by Set")
 	}
 
-	if mmAddUser.defaultExpectation == nil {
-		mmAddUser.defaultExpectation = &UserMockAddUserExpectation{mock: mmAddUser.mock}
+	if mmAdd.defaultExpectation == nil {
+		mmAdd.defaultExpectation = &UserMockAddExpectation{mock: mmAdd.mock}
 	}
-	mmAddUser.defaultExpectation.results = &UserMockAddUserResults{err}
-	return mmAddUser.mock
+	mmAdd.defaultExpectation.results = &UserMockAddResults{err}
+	return mmAdd.mock
 }
 
-// Set uses given function f to mock the UserI.Add method
-func (mmAddUser *mUserMockAddUser) Set(f func(user entities.User) (err error)) *UserMock {
-	if mmAddUser.defaultExpectation != nil {
-		mmAddUser.mock.t.Fatalf("Default expectation is already set for the UserI.Add method")
+// Set uses given function f to mock the User.Add method
+func (mmAdd *mUserMockAdd) Set(f func(user entities.User) (err error)) *UserMock {
+	if mmAdd.defaultExpectation != nil {
+		mmAdd.mock.t.Fatalf("Default expectation is already set for the User.Add method")
 	}
 
-	if len(mmAddUser.expectations) > 0 {
-		mmAddUser.mock.t.Fatalf("Some expectations are already set for the UserI.Add method")
+	if len(mmAdd.expectations) > 0 {
+		mmAdd.mock.t.Fatalf("Some expectations are already set for the User.Add method")
 	}
 
-	mmAddUser.mock.funcAddUser = f
-	return mmAddUser.mock
+	mmAdd.mock.funcAdd = f
+	return mmAdd.mock
 }
 
-// When sets expectation for the UserI.Add which will trigger the result defined by the following
+// When sets expectation for the User.Add which will trigger the result defined by the following
 // Then helper
-func (mmAddUser *mUserMockAddUser) When(user entities.User) *UserMockAddUserExpectation {
-	if mmAddUser.mock.funcAddUser != nil {
-		mmAddUser.mock.t.Fatalf("UserMock.Add mock is already set by Set")
+func (mmAdd *mUserMockAdd) When(user entities.User) *UserMockAddExpectation {
+	if mmAdd.mock.funcAdd != nil {
+		mmAdd.mock.t.Fatalf("UserMock.Add mock is already set by Set")
 	}
 
-	expectation := &UserMockAddUserExpectation{
-		mock:   mmAddUser.mock,
-		params: &UserMockAddUserParams{user},
+	expectation := &UserMockAddExpectation{
+		mock:   mmAdd.mock,
+		params: &UserMockAddParams{user},
 	}
-	mmAddUser.expectations = append(mmAddUser.expectations, expectation)
+	mmAdd.expectations = append(mmAdd.expectations, expectation)
 	return expectation
 }
 
-// Then sets up UserI.Add return parameters for the expectation previously defined by the When method
-func (e *UserMockAddUserExpectation) Then(err error) *UserMock {
-	e.results = &UserMockAddUserResults{err}
+// Then sets up User.Add return parameters for the expectation previously defined by the When method
+func (e *UserMockAddExpectation) Then(err error) *UserMock {
+	e.results = &UserMockAddResults{err}
 	return e.mock
 }
 
-// Times sets number of times UserI.Add should be invoked
-func (mmAddUser *mUserMockAddUser) Times(n uint64) *mUserMockAddUser {
+// Times sets number of times User.Add should be invoked
+func (mmAdd *mUserMockAdd) Times(n uint64) *mUserMockAdd {
 	if n == 0 {
-		mmAddUser.mock.t.Fatalf("Times of UserMock.Add mock can not be zero")
+		mmAdd.mock.t.Fatalf("Times of UserMock.Add mock can not be zero")
 	}
-	mm_atomic.StoreUint64(&mmAddUser.expectedInvocations, n)
-	return mmAddUser
+	mm_atomic.StoreUint64(&mmAdd.expectedInvocations, n)
+	return mmAdd
 }
 
-func (mmAddUser *mUserMockAddUser) invocationsDone() bool {
-	if len(mmAddUser.expectations) == 0 && mmAddUser.defaultExpectation == nil && mmAddUser.mock.funcAddUser == nil {
+func (mmAdd *mUserMockAdd) invocationsDone() bool {
+	if len(mmAdd.expectations) == 0 && mmAdd.defaultExpectation == nil && mmAdd.mock.funcAdd == nil {
 		return true
 	}
 
-	totalInvocations := mm_atomic.LoadUint64(&mmAddUser.mock.afterAddUserCounter)
-	expectedInvocations := mm_atomic.LoadUint64(&mmAddUser.expectedInvocations)
+	totalInvocations := mm_atomic.LoadUint64(&mmAdd.mock.afterAddCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmAdd.expectedInvocations)
 
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// AddUser implements repo.UserI
-func (mmAddUser *UserMock) Add(user entities.User) (err error) {
-	mm_atomic.AddUint64(&mmAddUser.beforeAddUserCounter, 1)
-	defer mm_atomic.AddUint64(&mmAddUser.afterAddUserCounter, 1)
+// Add implements repo.User
+func (mmAdd *UserMock) Add(user entities.User) (err error) {
+	mm_atomic.AddUint64(&mmAdd.beforeAddCounter, 1)
+	defer mm_atomic.AddUint64(&mmAdd.afterAddCounter, 1)
 
-	if mmAddUser.inspectFuncAddUser != nil {
-		mmAddUser.inspectFuncAddUser(user)
+	if mmAdd.inspectFuncAdd != nil {
+		mmAdd.inspectFuncAdd(user)
 	}
 
-	mm_params := UserMockAddUserParams{user}
+	mm_params := UserMockAddParams{user}
 
 	// Record call args
-	mmAddUser.AddUserMock.mutex.Lock()
-	mmAddUser.AddUserMock.callArgs = append(mmAddUser.AddUserMock.callArgs, &mm_params)
-	mmAddUser.AddUserMock.mutex.Unlock()
+	mmAdd.AddMock.mutex.Lock()
+	mmAdd.AddMock.callArgs = append(mmAdd.AddMock.callArgs, &mm_params)
+	mmAdd.AddMock.mutex.Unlock()
 
-	for _, e := range mmAddUser.AddUserMock.expectations {
+	for _, e := range mmAdd.AddMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.err
 		}
 	}
 
-	if mmAddUser.AddUserMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmAddUser.AddUserMock.defaultExpectation.Counter, 1)
-		mm_want := mmAddUser.AddUserMock.defaultExpectation.params
-		mm_want_ptrs := mmAddUser.AddUserMock.defaultExpectation.paramPtrs
+	if mmAdd.AddMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmAdd.AddMock.defaultExpectation.Counter, 1)
+		mm_want := mmAdd.AddMock.defaultExpectation.params
+		mm_want_ptrs := mmAdd.AddMock.defaultExpectation.paramPtrs
 
-		mm_got := UserMockAddUserParams{user}
+		mm_got := UserMockAddParams{user}
 
 		if mm_want_ptrs != nil {
 
 			if mm_want_ptrs.user != nil && !minimock.Equal(*mm_want_ptrs.user, mm_got.user) {
-				mmAddUser.t.Errorf("UserMock.Add got unexpected parameter user, want: %#v, got: %#v%s\n", *mm_want_ptrs.user, mm_got.user, minimock.Diff(*mm_want_ptrs.user, mm_got.user))
+				mmAdd.t.Errorf("UserMock.Add got unexpected parameter user, want: %#v, got: %#v%s\n", *mm_want_ptrs.user, mm_got.user, minimock.Diff(*mm_want_ptrs.user, mm_got.user))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmAddUser.t.Errorf("UserMock.Add got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmAdd.t.Errorf("UserMock.Add got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmAddUser.AddUserMock.defaultExpectation.results
+		mm_results := mmAdd.AddMock.defaultExpectation.results
 		if mm_results == nil {
-			mmAddUser.t.Fatal("No results are set for the UserMock.Add")
+			mmAdd.t.Fatal("No results are set for the UserMock.Add")
 		}
 		return (*mm_results).err
 	}
-	if mmAddUser.funcAddUser != nil {
-		return mmAddUser.funcAddUser(user)
+	if mmAdd.funcAdd != nil {
+		return mmAdd.funcAdd(user)
 	}
-	mmAddUser.t.Fatalf("Unexpected call to UserMock.Add. %v", user)
+	mmAdd.t.Fatalf("Unexpected call to UserMock.Add. %v", user)
 	return
 }
 
-// AddUserAfterCounter returns a count of finished UserMock.AddUser invocations
-func (mmAddUser *UserMock) AddUserAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmAddUser.afterAddUserCounter)
+// AddAfterCounter returns a count of finished UserMock.Add invocations
+func (mmAdd *UserMock) AddAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmAdd.afterAddCounter)
 }
 
-// AddUserBeforeCounter returns a count of UserMock.AddUser invocations
-func (mmAddUser *UserMock) AddUserBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmAddUser.beforeAddUserCounter)
+// AddBeforeCounter returns a count of UserMock.Add invocations
+func (mmAdd *UserMock) AddBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmAdd.beforeAddCounter)
 }
 
-// Calls returns a list of arguments used in each call to UserMock.AddUser.
+// Calls returns a list of arguments used in each call to UserMock.Add.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmAddUser *mUserMockAddUser) Calls() []*UserMockAddUserParams {
-	mmAddUser.mutex.RLock()
+func (mmAdd *mUserMockAdd) Calls() []*UserMockAddParams {
+	mmAdd.mutex.RLock()
 
-	argCopy := make([]*UserMockAddUserParams, len(mmAddUser.callArgs))
-	copy(argCopy, mmAddUser.callArgs)
+	argCopy := make([]*UserMockAddParams, len(mmAdd.callArgs))
+	copy(argCopy, mmAdd.callArgs)
 
-	mmAddUser.mutex.RUnlock()
+	mmAdd.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockAddUserDone returns true if the count of the AddUser invocations corresponds
+// MinimockAddDone returns true if the count of the Add invocations corresponds
 // the number of defined expectations
-func (m *UserMock) MinimockAddUserDone() bool {
-	if m.AddUserMock.optional {
+func (m *UserMock) MinimockAddDone() bool {
+	if m.AddMock.optional {
 		// Optional methods provide '0 or more' call count restriction.
 		return true
 	}
 
-	for _, e := range m.AddUserMock.expectations {
+	for _, e := range m.AddMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
-	return m.AddUserMock.invocationsDone()
+	return m.AddMock.invocationsDone()
 }
 
-// MinimockAddUserInspect logs each unmet expectation
-func (m *UserMock) MinimockAddUserInspect() {
-	for _, e := range m.AddUserMock.expectations {
+// MinimockAddInspect logs each unmet expectation
+func (m *UserMock) MinimockAddInspect() {
+	for _, e := range m.AddMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			m.t.Errorf("Expected call to UserMock.Add with params: %#v", *e.params)
 		}
 	}
 
-	afterAddUserCounter := mm_atomic.LoadUint64(&m.afterAddUserCounter)
+	afterAddCounter := mm_atomic.LoadUint64(&m.afterAddCounter)
 	// if default expectation was set then invocations count should be greater than zero
-	if m.AddUserMock.defaultExpectation != nil && afterAddUserCounter < 1 {
-		if m.AddUserMock.defaultExpectation.params == nil {
+	if m.AddMock.defaultExpectation != nil && afterAddCounter < 1 {
+		if m.AddMock.defaultExpectation.params == nil {
 			m.t.Error("Expected call to UserMock.Add")
 		} else {
-			m.t.Errorf("Expected call to UserMock.Add with params: %#v", *m.AddUserMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to UserMock.Add with params: %#v", *m.AddMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcAddUser != nil && afterAddUserCounter < 1 {
+	if m.funcAdd != nil && afterAddCounter < 1 {
 		m.t.Error("Expected call to UserMock.Add")
 	}
 
-	if !m.AddUserMock.invocationsDone() && afterAddUserCounter > 0 {
+	if !m.AddMock.invocationsDone() && afterAddCounter > 0 {
 		m.t.Errorf("Expected %d calls to UserMock.Add but found %d calls",
-			mm_atomic.LoadUint64(&m.AddUserMock.expectedInvocations), afterAddUserCounter)
+			mm_atomic.LoadUint64(&m.AddMock.expectedInvocations), afterAddCounter)
 	}
 }
 
-type mUserMockGetUser struct {
+type mUserMockGet struct {
 	optional           bool
 	mock               *UserMock
-	defaultExpectation *UserMockGetUserExpectation
-	expectations       []*UserMockGetUserExpectation
+	defaultExpectation *UserMockGetExpectation
+	expectations       []*UserMockGetExpectation
 
-	callArgs []*UserMockGetUserParams
+	callArgs []*UserMockGetParams
 	mutex    sync.RWMutex
 
 	expectedInvocations uint64
 }
 
-// UserMockGetUserExpectation specifies expectation struct of the UserI.Get
-type UserMockGetUserExpectation struct {
+// UserMockGetExpectation specifies expectation struct of the User.Get
+type UserMockGetExpectation struct {
 	mock      *UserMock
-	params    *UserMockGetUserParams
-	paramPtrs *UserMockGetUserParamPtrs
-	results   *UserMockGetUserResults
+	params    *UserMockGetParams
+	paramPtrs *UserMockGetParamPtrs
+	results   *UserMockGetResults
 	Counter   uint64
 }
 
-// UserMockGetUserParams contains parameters of the UserI.Get
-type UserMockGetUserParams struct {
+// UserMockGetParams contains parameters of the User.Get
+type UserMockGetParams struct {
 	mail string
 }
 
-// UserMockGetUserParamPtrs contains pointers to parameters of the UserI.Get
-type UserMockGetUserParamPtrs struct {
+// UserMockGetParamPtrs contains pointers to parameters of the User.Get
+type UserMockGetParamPtrs struct {
 	mail *string
 }
 
-// UserMockGetUserResults contains results of the UserI.Get
-type UserMockGetUserResults struct {
+// UserMockGetResults contains results of the User.Get
+type UserMockGetResults struct {
 	up1 *entities.User
 	err error
 }
@@ -384,254 +384,254 @@ type UserMockGetUserResults struct {
 // Optional() makes method check to work in '0 or more' mode.
 // It is NOT RECOMMENDED to use this option unless you really need it, as default behaviour helps to
 // catch the problems when the expected method call is totally skipped during test run.
-func (mmGetUser *mUserMockGetUser) Optional() *mUserMockGetUser {
-	mmGetUser.optional = true
-	return mmGetUser
+func (mmGet *mUserMockGet) Optional() *mUserMockGet {
+	mmGet.optional = true
+	return mmGet
 }
 
-// Expect sets up expected params for UserI.Get
-func (mmGetUser *mUserMockGetUser) Expect(mail string) *mUserMockGetUser {
-	if mmGetUser.mock.funcGetUser != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by Set")
+// Expect sets up expected params for User.Get
+func (mmGet *mUserMockGet) Expect(mail string) *mUserMockGet {
+	if mmGet.mock.funcGet != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by Set")
 	}
 
-	if mmGetUser.defaultExpectation == nil {
-		mmGetUser.defaultExpectation = &UserMockGetUserExpectation{}
+	if mmGet.defaultExpectation == nil {
+		mmGet.defaultExpectation = &UserMockGetExpectation{}
 	}
 
-	if mmGetUser.defaultExpectation.paramPtrs != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by ExpectParams functions")
+	if mmGet.defaultExpectation.paramPtrs != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by ExpectParams functions")
 	}
 
-	mmGetUser.defaultExpectation.params = &UserMockGetUserParams{mail}
-	for _, e := range mmGetUser.expectations {
-		if minimock.Equal(e.params, mmGetUser.defaultExpectation.params) {
-			mmGetUser.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGetUser.defaultExpectation.params)
+	mmGet.defaultExpectation.params = &UserMockGetParams{mail}
+	for _, e := range mmGet.expectations {
+		if minimock.Equal(e.params, mmGet.defaultExpectation.params) {
+			mmGet.mock.t.Fatalf("Expectation set by When has same params: %#v", *mmGet.defaultExpectation.params)
 		}
 	}
 
-	return mmGetUser
+	return mmGet
 }
 
-// ExpectMailParam1 sets up expected param mail for UserI.Get
-func (mmGetUser *mUserMockGetUser) ExpectMailParam1(mail string) *mUserMockGetUser {
-	if mmGetUser.mock.funcGetUser != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by Set")
+// ExpectMailParam1 sets up expected param mail for User.Get
+func (mmGet *mUserMockGet) ExpectMailParam1(mail string) *mUserMockGet {
+	if mmGet.mock.funcGet != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by Set")
 	}
 
-	if mmGetUser.defaultExpectation == nil {
-		mmGetUser.defaultExpectation = &UserMockGetUserExpectation{}
+	if mmGet.defaultExpectation == nil {
+		mmGet.defaultExpectation = &UserMockGetExpectation{}
 	}
 
-	if mmGetUser.defaultExpectation.params != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by Expect")
+	if mmGet.defaultExpectation.params != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by Expect")
 	}
 
-	if mmGetUser.defaultExpectation.paramPtrs == nil {
-		mmGetUser.defaultExpectation.paramPtrs = &UserMockGetUserParamPtrs{}
+	if mmGet.defaultExpectation.paramPtrs == nil {
+		mmGet.defaultExpectation.paramPtrs = &UserMockGetParamPtrs{}
 	}
-	mmGetUser.defaultExpectation.paramPtrs.mail = &mail
+	mmGet.defaultExpectation.paramPtrs.mail = &mail
 
-	return mmGetUser
+	return mmGet
 }
 
-// Inspect accepts an inspector function that has same arguments as the UserI.Get
-func (mmGetUser *mUserMockGetUser) Inspect(f func(mail string)) *mUserMockGetUser {
-	if mmGetUser.mock.inspectFuncGetUser != nil {
-		mmGetUser.mock.t.Fatalf("Inspect function is already set for UserMock.Get")
+// Inspect accepts an inspector function that has same arguments as the User.Get
+func (mmGet *mUserMockGet) Inspect(f func(mail string)) *mUserMockGet {
+	if mmGet.mock.inspectFuncGet != nil {
+		mmGet.mock.t.Fatalf("Inspect function is already set for UserMock.Get")
 	}
 
-	mmGetUser.mock.inspectFuncGetUser = f
+	mmGet.mock.inspectFuncGet = f
 
-	return mmGetUser
+	return mmGet
 }
 
-// Return sets up results that will be returned by UserI.Get
-func (mmGetUser *mUserMockGetUser) Return(up1 *entities.User, err error) *UserMock {
-	if mmGetUser.mock.funcGetUser != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by Set")
+// Return sets up results that will be returned by User.Get
+func (mmGet *mUserMockGet) Return(up1 *entities.User, err error) *UserMock {
+	if mmGet.mock.funcGet != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by Set")
 	}
 
-	if mmGetUser.defaultExpectation == nil {
-		mmGetUser.defaultExpectation = &UserMockGetUserExpectation{mock: mmGetUser.mock}
+	if mmGet.defaultExpectation == nil {
+		mmGet.defaultExpectation = &UserMockGetExpectation{mock: mmGet.mock}
 	}
-	mmGetUser.defaultExpectation.results = &UserMockGetUserResults{up1, err}
-	return mmGetUser.mock
+	mmGet.defaultExpectation.results = &UserMockGetResults{up1, err}
+	return mmGet.mock
 }
 
-// Set uses given function f to mock the UserI.Get method
-func (mmGetUser *mUserMockGetUser) Set(f func(mail string) (up1 *entities.User, err error)) *UserMock {
-	if mmGetUser.defaultExpectation != nil {
-		mmGetUser.mock.t.Fatalf("Default expectation is already set for the UserI.Get method")
+// Set uses given function f to mock the User.Get method
+func (mmGet *mUserMockGet) Set(f func(mail string) (up1 *entities.User, err error)) *UserMock {
+	if mmGet.defaultExpectation != nil {
+		mmGet.mock.t.Fatalf("Default expectation is already set for the User.Get method")
 	}
 
-	if len(mmGetUser.expectations) > 0 {
-		mmGetUser.mock.t.Fatalf("Some expectations are already set for the UserI.Get method")
+	if len(mmGet.expectations) > 0 {
+		mmGet.mock.t.Fatalf("Some expectations are already set for the User.Get method")
 	}
 
-	mmGetUser.mock.funcGetUser = f
-	return mmGetUser.mock
+	mmGet.mock.funcGet = f
+	return mmGet.mock
 }
 
-// When sets expectation for the UserI.Get which will trigger the result defined by the following
+// When sets expectation for the User.Get which will trigger the result defined by the following
 // Then helper
-func (mmGetUser *mUserMockGetUser) When(mail string) *UserMockGetUserExpectation {
-	if mmGetUser.mock.funcGetUser != nil {
-		mmGetUser.mock.t.Fatalf("UserMock.Get mock is already set by Set")
+func (mmGet *mUserMockGet) When(mail string) *UserMockGetExpectation {
+	if mmGet.mock.funcGet != nil {
+		mmGet.mock.t.Fatalf("UserMock.Get mock is already set by Set")
 	}
 
-	expectation := &UserMockGetUserExpectation{
-		mock:   mmGetUser.mock,
-		params: &UserMockGetUserParams{mail},
+	expectation := &UserMockGetExpectation{
+		mock:   mmGet.mock,
+		params: &UserMockGetParams{mail},
 	}
-	mmGetUser.expectations = append(mmGetUser.expectations, expectation)
+	mmGet.expectations = append(mmGet.expectations, expectation)
 	return expectation
 }
 
-// Then sets up UserI.Get return parameters for the expectation previously defined by the When method
-func (e *UserMockGetUserExpectation) Then(up1 *entities.User, err error) *UserMock {
-	e.results = &UserMockGetUserResults{up1, err}
+// Then sets up User.Get return parameters for the expectation previously defined by the When method
+func (e *UserMockGetExpectation) Then(up1 *entities.User, err error) *UserMock {
+	e.results = &UserMockGetResults{up1, err}
 	return e.mock
 }
 
-// Times sets number of times UserI.Get should be invoked
-func (mmGetUser *mUserMockGetUser) Times(n uint64) *mUserMockGetUser {
+// Times sets number of times User.Get should be invoked
+func (mmGet *mUserMockGet) Times(n uint64) *mUserMockGet {
 	if n == 0 {
-		mmGetUser.mock.t.Fatalf("Times of UserMock.Get mock can not be zero")
+		mmGet.mock.t.Fatalf("Times of UserMock.Get mock can not be zero")
 	}
-	mm_atomic.StoreUint64(&mmGetUser.expectedInvocations, n)
-	return mmGetUser
+	mm_atomic.StoreUint64(&mmGet.expectedInvocations, n)
+	return mmGet
 }
 
-func (mmGetUser *mUserMockGetUser) invocationsDone() bool {
-	if len(mmGetUser.expectations) == 0 && mmGetUser.defaultExpectation == nil && mmGetUser.mock.funcGetUser == nil {
+func (mmGet *mUserMockGet) invocationsDone() bool {
+	if len(mmGet.expectations) == 0 && mmGet.defaultExpectation == nil && mmGet.mock.funcGet == nil {
 		return true
 	}
 
-	totalInvocations := mm_atomic.LoadUint64(&mmGetUser.mock.afterGetUserCounter)
-	expectedInvocations := mm_atomic.LoadUint64(&mmGetUser.expectedInvocations)
+	totalInvocations := mm_atomic.LoadUint64(&mmGet.mock.afterGetCounter)
+	expectedInvocations := mm_atomic.LoadUint64(&mmGet.expectedInvocations)
 
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetUser implements repo.UserI
-func (mmGetUser *UserMock) Get(mail string) (up1 *entities.User, err error) {
-	mm_atomic.AddUint64(&mmGetUser.beforeGetUserCounter, 1)
-	defer mm_atomic.AddUint64(&mmGetUser.afterGetUserCounter, 1)
+// Get implements repo.User
+func (mmGet *UserMock) Get(mail string) (up1 *entities.User, err error) {
+	mm_atomic.AddUint64(&mmGet.beforeGetCounter, 1)
+	defer mm_atomic.AddUint64(&mmGet.afterGetCounter, 1)
 
-	if mmGetUser.inspectFuncGetUser != nil {
-		mmGetUser.inspectFuncGetUser(mail)
+	if mmGet.inspectFuncGet != nil {
+		mmGet.inspectFuncGet(mail)
 	}
 
-	mm_params := UserMockGetUserParams{mail}
+	mm_params := UserMockGetParams{mail}
 
 	// Record call args
-	mmGetUser.GetUserMock.mutex.Lock()
-	mmGetUser.GetUserMock.callArgs = append(mmGetUser.GetUserMock.callArgs, &mm_params)
-	mmGetUser.GetUserMock.mutex.Unlock()
+	mmGet.GetMock.mutex.Lock()
+	mmGet.GetMock.callArgs = append(mmGet.GetMock.callArgs, &mm_params)
+	mmGet.GetMock.mutex.Unlock()
 
-	for _, e := range mmGetUser.GetUserMock.expectations {
+	for _, e := range mmGet.GetMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
 			return e.results.up1, e.results.err
 		}
 	}
 
-	if mmGetUser.GetUserMock.defaultExpectation != nil {
-		mm_atomic.AddUint64(&mmGetUser.GetUserMock.defaultExpectation.Counter, 1)
-		mm_want := mmGetUser.GetUserMock.defaultExpectation.params
-		mm_want_ptrs := mmGetUser.GetUserMock.defaultExpectation.paramPtrs
+	if mmGet.GetMock.defaultExpectation != nil {
+		mm_atomic.AddUint64(&mmGet.GetMock.defaultExpectation.Counter, 1)
+		mm_want := mmGet.GetMock.defaultExpectation.params
+		mm_want_ptrs := mmGet.GetMock.defaultExpectation.paramPtrs
 
-		mm_got := UserMockGetUserParams{mail}
+		mm_got := UserMockGetParams{mail}
 
 		if mm_want_ptrs != nil {
 
 			if mm_want_ptrs.mail != nil && !minimock.Equal(*mm_want_ptrs.mail, mm_got.mail) {
-				mmGetUser.t.Errorf("UserMock.Get got unexpected parameter mail, want: %#v, got: %#v%s\n", *mm_want_ptrs.mail, mm_got.mail, minimock.Diff(*mm_want_ptrs.mail, mm_got.mail))
+				mmGet.t.Errorf("UserMock.Get got unexpected parameter mail, want: %#v, got: %#v%s\n", *mm_want_ptrs.mail, mm_got.mail, minimock.Diff(*mm_want_ptrs.mail, mm_got.mail))
 			}
 
 		} else if mm_want != nil && !minimock.Equal(*mm_want, mm_got) {
-			mmGetUser.t.Errorf("UserMock.Get got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
+			mmGet.t.Errorf("UserMock.Get got unexpected parameters, want: %#v, got: %#v%s\n", *mm_want, mm_got, minimock.Diff(*mm_want, mm_got))
 		}
 
-		mm_results := mmGetUser.GetUserMock.defaultExpectation.results
+		mm_results := mmGet.GetMock.defaultExpectation.results
 		if mm_results == nil {
-			mmGetUser.t.Fatal("No results are set for the UserMock.Get")
+			mmGet.t.Fatal("No results are set for the UserMock.Get")
 		}
 		return (*mm_results).up1, (*mm_results).err
 	}
-	if mmGetUser.funcGetUser != nil {
-		return mmGetUser.funcGetUser(mail)
+	if mmGet.funcGet != nil {
+		return mmGet.funcGet(mail)
 	}
-	mmGetUser.t.Fatalf("Unexpected call to UserMock.Get. %v", mail)
+	mmGet.t.Fatalf("Unexpected call to UserMock.Get. %v", mail)
 	return
 }
 
-// GetUserAfterCounter returns a count of finished UserMock.GetUser invocations
-func (mmGetUser *UserMock) GetUserAfterCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetUser.afterGetUserCounter)
+// GetAfterCounter returns a count of finished UserMock.Get invocations
+func (mmGet *UserMock) GetAfterCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGet.afterGetCounter)
 }
 
-// GetUserBeforeCounter returns a count of UserMock.GetUser invocations
-func (mmGetUser *UserMock) GetUserBeforeCounter() uint64 {
-	return mm_atomic.LoadUint64(&mmGetUser.beforeGetUserCounter)
+// GetBeforeCounter returns a count of UserMock.Get invocations
+func (mmGet *UserMock) GetBeforeCounter() uint64 {
+	return mm_atomic.LoadUint64(&mmGet.beforeGetCounter)
 }
 
-// Calls returns a list of arguments used in each call to UserMock.GetUser.
+// Calls returns a list of arguments used in each call to UserMock.Get.
 // The list is in the same order as the calls were made (i.e. recent calls have a higher index)
-func (mmGetUser *mUserMockGetUser) Calls() []*UserMockGetUserParams {
-	mmGetUser.mutex.RLock()
+func (mmGet *mUserMockGet) Calls() []*UserMockGetParams {
+	mmGet.mutex.RLock()
 
-	argCopy := make([]*UserMockGetUserParams, len(mmGetUser.callArgs))
-	copy(argCopy, mmGetUser.callArgs)
+	argCopy := make([]*UserMockGetParams, len(mmGet.callArgs))
+	copy(argCopy, mmGet.callArgs)
 
-	mmGetUser.mutex.RUnlock()
+	mmGet.mutex.RUnlock()
 
 	return argCopy
 }
 
-// MinimockGetUserDone returns true if the count of the GetUser invocations corresponds
+// MinimockGetDone returns true if the count of the Get invocations corresponds
 // the number of defined expectations
-func (m *UserMock) MinimockGetUserDone() bool {
-	if m.GetUserMock.optional {
+func (m *UserMock) MinimockGetDone() bool {
+	if m.GetMock.optional {
 		// Optional methods provide '0 or more' call count restriction.
 		return true
 	}
 
-	for _, e := range m.GetUserMock.expectations {
+	for _, e := range m.GetMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			return false
 		}
 	}
 
-	return m.GetUserMock.invocationsDone()
+	return m.GetMock.invocationsDone()
 }
 
-// MinimockGetUserInspect logs each unmet expectation
-func (m *UserMock) MinimockGetUserInspect() {
-	for _, e := range m.GetUserMock.expectations {
+// MinimockGetInspect logs each unmet expectation
+func (m *UserMock) MinimockGetInspect() {
+	for _, e := range m.GetMock.expectations {
 		if mm_atomic.LoadUint64(&e.Counter) < 1 {
 			m.t.Errorf("Expected call to UserMock.Get with params: %#v", *e.params)
 		}
 	}
 
-	afterGetUserCounter := mm_atomic.LoadUint64(&m.afterGetUserCounter)
+	afterGetCounter := mm_atomic.LoadUint64(&m.afterGetCounter)
 	// if default expectation was set then invocations count should be greater than zero
-	if m.GetUserMock.defaultExpectation != nil && afterGetUserCounter < 1 {
-		if m.GetUserMock.defaultExpectation.params == nil {
+	if m.GetMock.defaultExpectation != nil && afterGetCounter < 1 {
+		if m.GetMock.defaultExpectation.params == nil {
 			m.t.Error("Expected call to UserMock.Get")
 		} else {
-			m.t.Errorf("Expected call to UserMock.Get with params: %#v", *m.GetUserMock.defaultExpectation.params)
+			m.t.Errorf("Expected call to UserMock.Get with params: %#v", *m.GetMock.defaultExpectation.params)
 		}
 	}
 	// if func was set then invocations count should be greater than zero
-	if m.funcGetUser != nil && afterGetUserCounter < 1 {
+	if m.funcGet != nil && afterGetCounter < 1 {
 		m.t.Error("Expected call to UserMock.Get")
 	}
 
-	if !m.GetUserMock.invocationsDone() && afterGetUserCounter > 0 {
+	if !m.GetMock.invocationsDone() && afterGetCounter > 0 {
 		m.t.Errorf("Expected %d calls to UserMock.Get but found %d calls",
-			mm_atomic.LoadUint64(&m.GetUserMock.expectedInvocations), afterGetUserCounter)
+			mm_atomic.LoadUint64(&m.GetMock.expectedInvocations), afterGetCounter)
 	}
 }
 
@@ -639,9 +639,9 @@ func (m *UserMock) MinimockGetUserInspect() {
 func (m *UserMock) MinimockFinish() {
 	m.finishOnce.Do(func() {
 		if !m.minimockDone() {
-			m.MinimockAddUserInspect()
+			m.MinimockAddInspect()
 
-			m.MinimockGetUserInspect()
+			m.MinimockGetInspect()
 		}
 	})
 }
@@ -665,6 +665,6 @@ func (m *UserMock) MinimockWait(timeout mm_time.Duration) {
 func (m *UserMock) minimockDone() bool {
 	done := true
 	return done &&
-		m.MinimockAddUserDone() &&
-		m.MinimockGetUserDone()
+		m.MinimockAddDone() &&
+		m.MinimockGetDone()
 }

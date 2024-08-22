@@ -53,7 +53,10 @@ func (hs *handlerService) GetPost(fun func() (models.GetPost, error)) (int, mode
 }
 
 func (hs *handlerService) GetPosts() (int, models.Response) {
-	posts := hs.users.GetPosts()
+	posts, err := hs.users.GetPosts()
+	if err != nil {
+		return http.StatusInternalServerError, models.Response{Message: "getPosts error: " + err.Error()}
+	}
 	return http.StatusOK, models.Response{Message: "success", Data: posts}
 }
 
@@ -62,9 +65,9 @@ func (hs *handlerService) WritePost(fun func() (models.WritePost, error)) (int, 
 	if err != nil {
 		return http.StatusBadRequest, models.Response{Message: "writePost error: " + err.Error()}
 	}
-	postId, err := hs.users.WritePost(&req.Header, &req.Body, time.Now(), req.Mail)
+	err = hs.users.WritePost(&req.Header, &req.Body, time.Now(), req.Mail)
 	if err != nil {
 		return http.StatusBadRequest, models.Response{Message: "writePost error: " + err.Error()}
 	}
-	return http.StatusOK, models.Response{Message: "success", Data: postId}
+	return http.StatusOK, models.Response{Message: "success"}
 }

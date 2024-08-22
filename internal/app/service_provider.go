@@ -1,8 +1,10 @@
 package app
 
 import (
+	"github.com/jackc/pgx/v5/pgxpool"
 	"server/internal/api/handlers"
 	"server/internal/repo"
+	"server/internal/repo/psql"
 	hs "server/internal/service/handler"
 	"server/internal/service/token"
 	"server/internal/service/users"
@@ -16,16 +18,21 @@ type serviceProvider struct {
 	usersS   users.Service
 	tokenS   token.Service
 	handlerS hs.Service
+
+	db *pgxpool.Pool
 }
 
-func newServiceProvider() *serviceProvider {
-	return &serviceProvider{}
+func newServiceProvider(db *pgxpool.Pool) *serviceProvider {
+	return &serviceProvider{db: db}
 }
 
 func (s *serviceProvider) repo() (repo.User, repo.Post, repo.Comment) {
-	s.postRepo = repo.NewPost()
-	s.commentRepo = repo.NewComment()
-	s.userRepo = repo.NewUser()
+	//s.postRepo = internaldb.NewPost()
+	//s.commentRepo = internaldb.NewComment()
+	//s.userRepo = internaldb.NewUser()
+	s.postRepo = psql.NewPost(s.db)
+	s.commentRepo = psql.NewComment(s.db)
+	s.userRepo = psql.NewUser(s.db)
 	return s.userRepo, s.postRepo, s.commentRepo
 }
 

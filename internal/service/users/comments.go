@@ -13,8 +13,7 @@ func (s *service) WriteComment(text *string, date time.Time, authorMail string, 
 	if text == nil || *text == "" {
 		return myErrors.EmptyField
 	}
-	s.comments.Add(text, date, authorMail, postId)
-	return nil
+	return s.comments.Add(text, date, authorMail, postId)
 }
 
 func (s *service) DeleteComment(postId, commentId int) error {
@@ -28,7 +27,7 @@ func (s *service) GetComments(postId int) ([]interface{}, error) {
 	if _, e := s.posts.GetPost(postId); e != nil {
 		return nil, e
 	}
-	return s.comments.GetPostComments(postId), nil
+	return s.comments.GetPostComments(postId)
 }
 
 func (s *service) GetComment(postId, commentId int) (*entities.Comment, error) {

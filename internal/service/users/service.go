@@ -11,10 +11,10 @@ type Service interface {
 	Register(name, mail, password string) error
 	GetProfile(mail string) (*entities.User, error)
 
-	WritePost(header, body *string, date time.Time, authorMail string) (int, error)
+	WritePost(header, body *string, date time.Time, authorMail string) error
 	EditPost(id int, header, body *string) error
 	DeletePost(postId int) error
-	GetPosts() []interface{}
+	GetPosts() ([]interface{}, error)
 	GetPost(postId int) (*entities.Post, error)
 
 	WriteComment(text *string, date time.Time, authorMail string, postId int) error

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/stretchr/testify/require"
 	"server/internal/entities"
-	"server/internal/repo"
+	"server/internal/repo/internaldb"
 	"server/pkg/myErrors"
 	"testing"
 	"time"
@@ -25,17 +25,17 @@ func TestAddPost(t *testing.T) {
 		{"arabian", "على الطاولة", "الكتاب على الطاولة", time.Now(), "hohoho@hoho.com", nil},
 	}
 
-	postRepo := repo.NewPost()
-
 	for _, tc := range testCasesPosts {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			id := postRepo.Add(&tc.header, &tc.body, tc.date, tc.mail)
-			post, err := postRepo.GetPost(id)
+			postRepo := internaldb.NewPost()
+			err := postRepo.Add(&tc.header, &tc.body, tc.date, tc.mail)
+			require.Nil(t, err)
+			post, err := postRepo.GetPost(0)
 			require.Nil(t, err)
 			require.Equal(t, &entities.Post{
-				PostId:     id,
+				Id:         0,
 				Header:     tc.header,
 				Body:       tc.body,
 				Date:       tc.date,
@@ -66,7 +66,7 @@ func TestRemovePost(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			postRepo := repo.NewPost()
+			postRepo := internaldb.NewPost()
 			_ = postRepo.Add(&base.header, &base.body, base.date, base.mail)
 			err := postRepo.Remove(tc.postId)
 			require.Equal(t, tc.errorMessage, err)
@@ -105,7 +105,7 @@ func TestUpdatePost(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			postRepo := repo.NewPost()
+			postRepo := internaldb.NewPost()
 			_ = postRepo.Add(&base.header, &base.body, base.date, base.mail)
 			err := postRepo.Update(tc.postId, &newBase.body, &newBase.body)
 			require.Equal(t, tc.errorMessage, err)
@@ -125,7 +125,7 @@ func TestGetPosts(t *testing.T) {
 		posts    []entities.Post
 	}{
 		{
-			testName: "two comments",
+			testName: "two posts",
 			posts: []entities.Post{
 				{0, "hoho1", "hoho1", time.Now(), "hohoho@hoho.com"},
 				{1, "hoho2", "hoho2", time.Now(), "hohoho@hoho.com"},
@@ -138,7 +138,7 @@ func TestGetPosts(t *testing.T) {
 			},
 		},
 		{
-			testName: "tree comments",
+			testName: "tree posts",
 			posts: []entities.Post{
 				{0, "hoho1", "hoho1", time.Now(), "hohoho@hoho.com"},
 				{1, "hoho2", "hoho2", time.Now(), "hohoho@hoho.com"},
@@ -146,7 +146,7 @@ func TestGetPosts(t *testing.T) {
 			},
 		},
 		{
-			testName: "zero comments",
+			testName: "zero posts",
 			posts:    []entities.Post{},
 		},
 	}
@@ -155,11 +155,12 @@ func TestGetPosts(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			postRepo := repo.NewPost()
+			postRepo := internaldb.NewPost()
 			for _, post := range tc.posts {
 				_ = postRepo.Add(&post.Header, &post.Body, post.Date, post.AuthorMail)
 			}
-			posts := postRepo.GetPosts()
+			posts, err := postRepo.GetPosts()
+			require.Nil(t, err)
 			require.Equal(t, len(tc.posts), len(posts))
 			for i, comment := range tc.posts {
 				require.Equal(t, &comment, posts[i].(*entities.Post))
@@ -208,7 +209,7 @@ func TestGetPost(t *testing.T) {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
-			postRepo := repo.NewPost()
+			postRepo := internaldb.NewPost()
 			for _, post := range tc.posts {
 				_ = postRepo.Add(&post.Header, &post.Body, post.Date, post.AuthorMail)
 			}

@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-func (s *service) WritePost(header, body *string, date time.Time, authorMail string) (int, error) {
+func (s *service) WritePost(header, body *string, date time.Time, authorMail string) error {
 	if *header == "" || *body == "" {
-		return 0, myErrors.EmptyPost
+		return myErrors.EmptyPost
 	}
-	return s.posts.Add(header, body, date, authorMail), nil
+	return s.posts.Add(header, body, date, authorMail)
 }
 
 func (s *service) EditPost(id int, header, body *string) error {
@@ -24,7 +24,7 @@ func (s *service) DeletePost(postId int) error {
 	return s.posts.Remove(postId)
 }
 
-func (s *service) GetPosts() []interface{} {
+func (s *service) GetPosts() ([]interface{}, error) {
 	return s.posts.GetPosts()
 }
 

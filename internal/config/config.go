@@ -25,3 +25,7 @@ func GetPort() (string, error) {
 		return port, nil
 	}
 }
+
+func GetDBaseURL() string {
+	return os.Getenv("DATABASE_URL")
+}

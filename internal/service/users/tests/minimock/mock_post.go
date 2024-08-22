@@ -2,7 +2,7 @@
 
 package minimock
 
-//go:generate minimock -i server/internal/repo.PostI -o mock_post.go -n PostMock -p minimock
+//go:generate minimock -i server/internal/repo.Post -o mock_post.go -n PostMock -p minimock
 
 import (
 	"server/internal/entities"
@@ -14,12 +14,12 @@ import (
 	"github.com/gojuno/minimock/v3"
 )
 
-// PostMock implements repo.PostI
+// PostMock implements repo.Post
 type PostMock struct {
 	t          minimock.Tester
 	finishOnce sync.Once
 
-	funcAdd          func(header *string, body *string, date time.Time, authorMail string) (i1 int)
+	funcAdd          func(header *string, body *string, date time.Time, authorMail string) (err error)
 	inspectFuncAdd   func(header *string, body *string, date time.Time, authorMail string)
 	afterAddCounter  uint64
 	beforeAddCounter uint64
@@ -31,7 +31,7 @@ type PostMock struct {
 	beforeGetPostCounter uint64
 	GetPostMock          mPostMockGetPost
 
-	funcGetPosts          func() (pa1 []interface{})
+	funcGetPosts          func() (pa1 []interface{}, err error)
 	inspectFuncGetPosts   func()
 	afterGetPostsCounter  uint64
 	beforeGetPostsCounter uint64
@@ -50,7 +50,7 @@ type PostMock struct {
 	UpdateMock          mPostMockUpdate
 }
 
-// NewPostMock returns a mock for repo.PostI
+// NewPostMock returns a mock for repo.Post
 func NewPostMock(t minimock.Tester) *PostMock {
 	m := &PostMock{t: t}
 
@@ -89,7 +89,7 @@ type mPostMockAdd struct {
 	expectedInvocations uint64
 }
 
-// PostMockAddExpectation specifies expectation struct of the PostI.Add
+// PostMockAddExpectation specifies expectation struct of the Post.Add
 type PostMockAddExpectation struct {
 	mock      *PostMock
 	params    *PostMockAddParams
@@ -98,7 +98,7 @@ type PostMockAddExpectation struct {
 	Counter   uint64
 }
 
-// PostMockAddParams contains parameters of the PostI.Add
+// PostMockAddParams contains parameters of the Post.Add
 type PostMockAddParams struct {
 	header     *string
 	body       *string
@@ -106,7 +106,7 @@ type PostMockAddParams struct {
 	authorMail string
 }
 
-// PostMockAddParamPtrs contains pointers to parameters of the PostI.Add
+// PostMockAddParamPtrs contains pointers to parameters of the Post.Add
 type PostMockAddParamPtrs struct {
 	header     **string
 	body       **string
@@ -114,9 +114,9 @@ type PostMockAddParamPtrs struct {
 	authorMail *string
 }
 
-// PostMockAddResults contains results of the PostI.Add
+// PostMockAddResults contains results of the Post.Add
 type PostMockAddResults struct {
-	i1 int
+	err error
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -129,7 +129,7 @@ func (mmAdd *mPostMockAdd) Optional() *mPostMockAdd {
 	return mmAdd
 }
 
-// Expect sets up expected params for PostI.Add
+// Expect sets up expected params for Post.Add
 func (mmAdd *mPostMockAdd) Expect(header *string, body *string, date time.Time, authorMail string) *mPostMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
@@ -153,7 +153,7 @@ func (mmAdd *mPostMockAdd) Expect(header *string, body *string, date time.Time, 
 	return mmAdd
 }
 
-// ExpectHeaderParam1 sets up expected param header for PostI.Add
+// ExpectHeaderParam1 sets up expected param header for Post.Add
 func (mmAdd *mPostMockAdd) ExpectHeaderParam1(header *string) *mPostMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
@@ -175,7 +175,7 @@ func (mmAdd *mPostMockAdd) ExpectHeaderParam1(header *string) *mPostMockAdd {
 	return mmAdd
 }
 
-// ExpectBodyParam2 sets up expected param body for PostI.Add
+// ExpectBodyParam2 sets up expected param body for Post.Add
 func (mmAdd *mPostMockAdd) ExpectBodyParam2(body *string) *mPostMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
@@ -197,7 +197,7 @@ func (mmAdd *mPostMockAdd) ExpectBodyParam2(body *string) *mPostMockAdd {
 	return mmAdd
 }
 
-// ExpectDateParam3 sets up expected param date for PostI.Add
+// ExpectDateParam3 sets up expected param date for Post.Add
 func (mmAdd *mPostMockAdd) ExpectDateParam3(date time.Time) *mPostMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
@@ -219,7 +219,7 @@ func (mmAdd *mPostMockAdd) ExpectDateParam3(date time.Time) *mPostMockAdd {
 	return mmAdd
 }
 
-// ExpectAuthorMailParam4 sets up expected param authorMail for PostI.Add
+// ExpectAuthorMailParam4 sets up expected param authorMail for Post.Add
 func (mmAdd *mPostMockAdd) ExpectAuthorMailParam4(authorMail string) *mPostMockAdd {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
@@ -241,7 +241,7 @@ func (mmAdd *mPostMockAdd) ExpectAuthorMailParam4(authorMail string) *mPostMockA
 	return mmAdd
 }
 
-// Inspect accepts an inspector function that has same arguments as the PostI.Add
+// Inspect accepts an inspector function that has same arguments as the Post.Add
 func (mmAdd *mPostMockAdd) Inspect(f func(header *string, body *string, date time.Time, authorMail string)) *mPostMockAdd {
 	if mmAdd.mock.inspectFuncAdd != nil {
 		mmAdd.mock.t.Fatalf("Inspect function is already set for PostMock.Add")
@@ -252,8 +252,8 @@ func (mmAdd *mPostMockAdd) Inspect(f func(header *string, body *string, date tim
 	return mmAdd
 }
 
-// Return sets up results that will be returned by PostI.Add
-func (mmAdd *mPostMockAdd) Return(i1 int) *PostMock {
+// Return sets up results that will be returned by Post.Add
+func (mmAdd *mPostMockAdd) Return(err error) *PostMock {
 	if mmAdd.mock.funcAdd != nil {
 		mmAdd.mock.t.Fatalf("PostMock.Add mock is already set by Set")
 	}
@@ -261,25 +261,25 @@ func (mmAdd *mPostMockAdd) Return(i1 int) *PostMock {
 	if mmAdd.defaultExpectation == nil {
 		mmAdd.defaultExpectation = &PostMockAddExpectation{mock: mmAdd.mock}
 	}
-	mmAdd.defaultExpectation.results = &PostMockAddResults{i1}
+	mmAdd.defaultExpectation.results = &PostMockAddResults{err}
 	return mmAdd.mock
 }
 
-// Set uses given function f to mock the PostI.Add method
-func (mmAdd *mPostMockAdd) Set(f func(header *string, body *string, date time.Time, authorMail string) (i1 int)) *PostMock {
+// Set uses given function f to mock the Post.Add method
+func (mmAdd *mPostMockAdd) Set(f func(header *string, body *string, date time.Time, authorMail string) (err error)) *PostMock {
 	if mmAdd.defaultExpectation != nil {
-		mmAdd.mock.t.Fatalf("Default expectation is already set for the PostI.Add method")
+		mmAdd.mock.t.Fatalf("Default expectation is already set for the Post.Add method")
 	}
 
 	if len(mmAdd.expectations) > 0 {
-		mmAdd.mock.t.Fatalf("Some expectations are already set for the PostI.Add method")
+		mmAdd.mock.t.Fatalf("Some expectations are already set for the Post.Add method")
 	}
 
 	mmAdd.mock.funcAdd = f
 	return mmAdd.mock
 }
 
-// When sets expectation for the PostI.Add which will trigger the result defined by the following
+// When sets expectation for the Post.Add which will trigger the result defined by the following
 // Then helper
 func (mmAdd *mPostMockAdd) When(header *string, body *string, date time.Time, authorMail string) *PostMockAddExpectation {
 	if mmAdd.mock.funcAdd != nil {
@@ -294,13 +294,13 @@ func (mmAdd *mPostMockAdd) When(header *string, body *string, date time.Time, au
 	return expectation
 }
 
-// Then sets up PostI.Add return parameters for the expectation previously defined by the When method
-func (e *PostMockAddExpectation) Then(i1 int) *PostMock {
-	e.results = &PostMockAddResults{i1}
+// Then sets up Post.Add return parameters for the expectation previously defined by the When method
+func (e *PostMockAddExpectation) Then(err error) *PostMock {
+	e.results = &PostMockAddResults{err}
 	return e.mock
 }
 
-// Times sets number of times PostI.Add should be invoked
+// Times sets number of times Post.Add should be invoked
 func (mmAdd *mPostMockAdd) Times(n uint64) *mPostMockAdd {
 	if n == 0 {
 		mmAdd.mock.t.Fatalf("Times of PostMock.Add mock can not be zero")
@@ -320,8 +320,8 @@ func (mmAdd *mPostMockAdd) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Add implements repo.PostI
-func (mmAdd *PostMock) Add(header *string, body *string, date time.Time, authorMail string) (i1 int) {
+// Add implements repo.Post
+func (mmAdd *PostMock) Add(header *string, body *string, date time.Time, authorMail string) (err error) {
 	mm_atomic.AddUint64(&mmAdd.beforeAddCounter, 1)
 	defer mm_atomic.AddUint64(&mmAdd.afterAddCounter, 1)
 
@@ -339,7 +339,7 @@ func (mmAdd *PostMock) Add(header *string, body *string, date time.Time, authorM
 	for _, e := range mmAdd.AddMock.expectations {
 		if minimock.Equal(*e.params, mm_params) {
 			mm_atomic.AddUint64(&e.Counter, 1)
-			return e.results.i1
+			return e.results.err
 		}
 	}
 
@@ -376,7 +376,7 @@ func (mmAdd *PostMock) Add(header *string, body *string, date time.Time, authorM
 		if mm_results == nil {
 			mmAdd.t.Fatal("No results are set for the PostMock.Add")
 		}
-		return (*mm_results).i1
+		return (*mm_results).err
 	}
 	if mmAdd.funcAdd != nil {
 		return mmAdd.funcAdd(header, body, date, authorMail)
@@ -465,7 +465,7 @@ type mPostMockGetPost struct {
 	expectedInvocations uint64
 }
 
-// PostMockGetPostExpectation specifies expectation struct of the PostI.GetPost
+// PostMockGetPostExpectation specifies expectation struct of the Post.GetPost
 type PostMockGetPostExpectation struct {
 	mock      *PostMock
 	params    *PostMockGetPostParams
@@ -474,17 +474,17 @@ type PostMockGetPostExpectation struct {
 	Counter   uint64
 }
 
-// PostMockGetPostParams contains parameters of the PostI.GetPost
+// PostMockGetPostParams contains parameters of the Post.GetPost
 type PostMockGetPostParams struct {
 	id int
 }
 
-// PostMockGetPostParamPtrs contains pointers to parameters of the PostI.GetPost
+// PostMockGetPostParamPtrs contains pointers to parameters of the Post.GetPost
 type PostMockGetPostParamPtrs struct {
 	id *int
 }
 
-// PostMockGetPostResults contains results of the PostI.GetPost
+// PostMockGetPostResults contains results of the Post.GetPost
 type PostMockGetPostResults struct {
 	pp1 *entities.Post
 	err error
@@ -500,7 +500,7 @@ func (mmGetPost *mPostMockGetPost) Optional() *mPostMockGetPost {
 	return mmGetPost
 }
 
-// Expect sets up expected params for PostI.GetPost
+// Expect sets up expected params for Post.GetPost
 func (mmGetPost *mPostMockGetPost) Expect(id int) *mPostMockGetPost {
 	if mmGetPost.mock.funcGetPost != nil {
 		mmGetPost.mock.t.Fatalf("PostMock.GetPost mock is already set by Set")
@@ -524,7 +524,7 @@ func (mmGetPost *mPostMockGetPost) Expect(id int) *mPostMockGetPost {
 	return mmGetPost
 }
 
-// ExpectIdParam1 sets up expected param id for PostI.GetPost
+// ExpectIdParam1 sets up expected param id for Post.GetPost
 func (mmGetPost *mPostMockGetPost) ExpectIdParam1(id int) *mPostMockGetPost {
 	if mmGetPost.mock.funcGetPost != nil {
 		mmGetPost.mock.t.Fatalf("PostMock.GetPost mock is already set by Set")
@@ -546,7 +546,7 @@ func (mmGetPost *mPostMockGetPost) ExpectIdParam1(id int) *mPostMockGetPost {
 	return mmGetPost
 }
 
-// Inspect accepts an inspector function that has same arguments as the PostI.GetPost
+// Inspect accepts an inspector function that has same arguments as the Post.GetPost
 func (mmGetPost *mPostMockGetPost) Inspect(f func(id int)) *mPostMockGetPost {
 	if mmGetPost.mock.inspectFuncGetPost != nil {
 		mmGetPost.mock.t.Fatalf("Inspect function is already set for PostMock.GetPost")
@@ -557,7 +557,7 @@ func (mmGetPost *mPostMockGetPost) Inspect(f func(id int)) *mPostMockGetPost {
 	return mmGetPost
 }
 
-// Return sets up results that will be returned by PostI.GetPost
+// Return sets up results that will be returned by Post.GetPost
 func (mmGetPost *mPostMockGetPost) Return(pp1 *entities.Post, err error) *PostMock {
 	if mmGetPost.mock.funcGetPost != nil {
 		mmGetPost.mock.t.Fatalf("PostMock.GetPost mock is already set by Set")
@@ -570,21 +570,21 @@ func (mmGetPost *mPostMockGetPost) Return(pp1 *entities.Post, err error) *PostMo
 	return mmGetPost.mock
 }
 
-// Set uses given function f to mock the PostI.GetPost method
+// Set uses given function f to mock the Post.GetPost method
 func (mmGetPost *mPostMockGetPost) Set(f func(id int) (pp1 *entities.Post, err error)) *PostMock {
 	if mmGetPost.defaultExpectation != nil {
-		mmGetPost.mock.t.Fatalf("Default expectation is already set for the PostI.GetPost method")
+		mmGetPost.mock.t.Fatalf("Default expectation is already set for the Post.GetPost method")
 	}
 
 	if len(mmGetPost.expectations) > 0 {
-		mmGetPost.mock.t.Fatalf("Some expectations are already set for the PostI.GetPost method")
+		mmGetPost.mock.t.Fatalf("Some expectations are already set for the Post.GetPost method")
 	}
 
 	mmGetPost.mock.funcGetPost = f
 	return mmGetPost.mock
 }
 
-// When sets expectation for the PostI.GetPost which will trigger the result defined by the following
+// When sets expectation for the Post.GetPost which will trigger the result defined by the following
 // Then helper
 func (mmGetPost *mPostMockGetPost) When(id int) *PostMockGetPostExpectation {
 	if mmGetPost.mock.funcGetPost != nil {
@@ -599,13 +599,13 @@ func (mmGetPost *mPostMockGetPost) When(id int) *PostMockGetPostExpectation {
 	return expectation
 }
 
-// Then sets up PostI.GetPost return parameters for the expectation previously defined by the When method
+// Then sets up Post.GetPost return parameters for the expectation previously defined by the When method
 func (e *PostMockGetPostExpectation) Then(pp1 *entities.Post, err error) *PostMock {
 	e.results = &PostMockGetPostResults{pp1, err}
 	return e.mock
 }
 
-// Times sets number of times PostI.GetPost should be invoked
+// Times sets number of times Post.GetPost should be invoked
 func (mmGetPost *mPostMockGetPost) Times(n uint64) *mPostMockGetPost {
 	if n == 0 {
 		mmGetPost.mock.t.Fatalf("Times of PostMock.GetPost mock can not be zero")
@@ -625,7 +625,7 @@ func (mmGetPost *mPostMockGetPost) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetPost implements repo.PostI
+// GetPost implements repo.Post
 func (mmGetPost *PostMock) GetPost(id int) (pp1 *entities.Post, err error) {
 	mm_atomic.AddUint64(&mmGetPost.beforeGetPostCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetPost.afterGetPostCounter, 1)
@@ -755,7 +755,7 @@ type mPostMockGetPosts struct {
 	expectedInvocations uint64
 }
 
-// PostMockGetPostsExpectation specifies expectation struct of the PostI.GetPosts
+// PostMockGetPostsExpectation specifies expectation struct of the Post.GetPosts
 type PostMockGetPostsExpectation struct {
 	mock *PostMock
 
@@ -763,9 +763,10 @@ type PostMockGetPostsExpectation struct {
 	Counter uint64
 }
 
-// PostMockGetPostsResults contains results of the PostI.GetPosts
+// PostMockGetPostsResults contains results of the Post.GetPosts
 type PostMockGetPostsResults struct {
 	pa1 []interface{}
+	err error
 }
 
 // Marks this method to be optional. The default behavior of any method with Return() is '1 or more', meaning
@@ -778,7 +779,7 @@ func (mmGetPosts *mPostMockGetPosts) Optional() *mPostMockGetPosts {
 	return mmGetPosts
 }
 
-// Expect sets up expected params for PostI.GetPosts
+// Expect sets up expected params for Post.GetPosts
 func (mmGetPosts *mPostMockGetPosts) Expect() *mPostMockGetPosts {
 	if mmGetPosts.mock.funcGetPosts != nil {
 		mmGetPosts.mock.t.Fatalf("PostMock.GetPosts mock is already set by Set")
@@ -791,7 +792,7 @@ func (mmGetPosts *mPostMockGetPosts) Expect() *mPostMockGetPosts {
 	return mmGetPosts
 }
 
-// Inspect accepts an inspector function that has same arguments as the PostI.GetPosts
+// Inspect accepts an inspector function that has same arguments as the Post.GetPosts
 func (mmGetPosts *mPostMockGetPosts) Inspect(f func()) *mPostMockGetPosts {
 	if mmGetPosts.mock.inspectFuncGetPosts != nil {
 		mmGetPosts.mock.t.Fatalf("Inspect function is already set for PostMock.GetPosts")
@@ -802,8 +803,8 @@ func (mmGetPosts *mPostMockGetPosts) Inspect(f func()) *mPostMockGetPosts {
 	return mmGetPosts
 }
 
-// Return sets up results that will be returned by PostI.GetPosts
-func (mmGetPosts *mPostMockGetPosts) Return(pa1 []interface{}) *PostMock {
+// Return sets up results that will be returned by Post.GetPosts
+func (mmGetPosts *mPostMockGetPosts) Return(pa1 []interface{}, err error) *PostMock {
 	if mmGetPosts.mock.funcGetPosts != nil {
 		mmGetPosts.mock.t.Fatalf("PostMock.GetPosts mock is already set by Set")
 	}
@@ -811,25 +812,25 @@ func (mmGetPosts *mPostMockGetPosts) Return(pa1 []interface{}) *PostMock {
 	if mmGetPosts.defaultExpectation == nil {
 		mmGetPosts.defaultExpectation = &PostMockGetPostsExpectation{mock: mmGetPosts.mock}
 	}
-	mmGetPosts.defaultExpectation.results = &PostMockGetPostsResults{pa1}
+	mmGetPosts.defaultExpectation.results = &PostMockGetPostsResults{pa1, err}
 	return mmGetPosts.mock
 }
 
-// Set uses given function f to mock the PostI.GetPosts method
-func (mmGetPosts *mPostMockGetPosts) Set(f func() (pa1 []interface{})) *PostMock {
+// Set uses given function f to mock the Post.GetPosts method
+func (mmGetPosts *mPostMockGetPosts) Set(f func() (pa1 []interface{}, err error)) *PostMock {
 	if mmGetPosts.defaultExpectation != nil {
-		mmGetPosts.mock.t.Fatalf("Default expectation is already set for the PostI.GetPosts method")
+		mmGetPosts.mock.t.Fatalf("Default expectation is already set for the Post.GetPosts method")
 	}
 
 	if len(mmGetPosts.expectations) > 0 {
-		mmGetPosts.mock.t.Fatalf("Some expectations are already set for the PostI.GetPosts method")
+		mmGetPosts.mock.t.Fatalf("Some expectations are already set for the Post.GetPosts method")
 	}
 
 	mmGetPosts.mock.funcGetPosts = f
 	return mmGetPosts.mock
 }
 
-// Times sets number of times PostI.GetPosts should be invoked
+// Times sets number of times Post.GetPosts should be invoked
 func (mmGetPosts *mPostMockGetPosts) Times(n uint64) *mPostMockGetPosts {
 	if n == 0 {
 		mmGetPosts.mock.t.Fatalf("Times of PostMock.GetPosts mock can not be zero")
@@ -849,8 +850,8 @@ func (mmGetPosts *mPostMockGetPosts) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// GetPosts implements repo.PostI
-func (mmGetPosts *PostMock) GetPosts() (pa1 []interface{}) {
+// GetPosts implements repo.Post
+func (mmGetPosts *PostMock) GetPosts() (pa1 []interface{}, err error) {
 	mm_atomic.AddUint64(&mmGetPosts.beforeGetPostsCounter, 1)
 	defer mm_atomic.AddUint64(&mmGetPosts.afterGetPostsCounter, 1)
 
@@ -865,7 +866,7 @@ func (mmGetPosts *PostMock) GetPosts() (pa1 []interface{}) {
 		if mm_results == nil {
 			mmGetPosts.t.Fatal("No results are set for the PostMock.GetPosts")
 		}
-		return (*mm_results).pa1
+		return (*mm_results).pa1, (*mm_results).err
 	}
 	if mmGetPosts.funcGetPosts != nil {
 		return mmGetPosts.funcGetPosts()
@@ -937,7 +938,7 @@ type mPostMockRemove struct {
 	expectedInvocations uint64
 }
 
-// PostMockRemoveExpectation specifies expectation struct of the PostI.Remove
+// PostMockRemoveExpectation specifies expectation struct of the Post.Remove
 type PostMockRemoveExpectation struct {
 	mock      *PostMock
 	params    *PostMockRemoveParams
@@ -946,17 +947,17 @@ type PostMockRemoveExpectation struct {
 	Counter   uint64
 }
 
-// PostMockRemoveParams contains parameters of the PostI.Remove
+// PostMockRemoveParams contains parameters of the Post.Remove
 type PostMockRemoveParams struct {
 	postId int
 }
 
-// PostMockRemoveParamPtrs contains pointers to parameters of the PostI.Remove
+// PostMockRemoveParamPtrs contains pointers to parameters of the Post.Remove
 type PostMockRemoveParamPtrs struct {
 	postId *int
 }
 
-// PostMockRemoveResults contains results of the PostI.Remove
+// PostMockRemoveResults contains results of the Post.Remove
 type PostMockRemoveResults struct {
 	err error
 }
@@ -971,7 +972,7 @@ func (mmRemove *mPostMockRemove) Optional() *mPostMockRemove {
 	return mmRemove
 }
 
-// Expect sets up expected params for PostI.Remove
+// Expect sets up expected params for Post.Remove
 func (mmRemove *mPostMockRemove) Expect(postId int) *mPostMockRemove {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("PostMock.Remove mock is already set by Set")
@@ -995,7 +996,7 @@ func (mmRemove *mPostMockRemove) Expect(postId int) *mPostMockRemove {
 	return mmRemove
 }
 
-// ExpectPostIdParam1 sets up expected param postId for PostI.Remove
+// ExpectPostIdParam1 sets up expected param postId for Post.Remove
 func (mmRemove *mPostMockRemove) ExpectPostIdParam1(postId int) *mPostMockRemove {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("PostMock.Remove mock is already set by Set")
@@ -1017,7 +1018,7 @@ func (mmRemove *mPostMockRemove) ExpectPostIdParam1(postId int) *mPostMockRemove
 	return mmRemove
 }
 
-// Inspect accepts an inspector function that has same arguments as the PostI.Remove
+// Inspect accepts an inspector function that has same arguments as the Post.Remove
 func (mmRemove *mPostMockRemove) Inspect(f func(postId int)) *mPostMockRemove {
 	if mmRemove.mock.inspectFuncRemove != nil {
 		mmRemove.mock.t.Fatalf("Inspect function is already set for PostMock.Remove")
@@ -1028,7 +1029,7 @@ func (mmRemove *mPostMockRemove) Inspect(f func(postId int)) *mPostMockRemove {
 	return mmRemove
 }
 
-// Return sets up results that will be returned by PostI.Remove
+// Return sets up results that will be returned by Post.Remove
 func (mmRemove *mPostMockRemove) Return(err error) *PostMock {
 	if mmRemove.mock.funcRemove != nil {
 		mmRemove.mock.t.Fatalf("PostMock.Remove mock is already set by Set")
@@ -1041,21 +1042,21 @@ func (mmRemove *mPostMockRemove) Return(err error) *PostMock {
 	return mmRemove.mock
 }
 
-// Set uses given function f to mock the PostI.Remove method
+// Set uses given function f to mock the Post.Remove method
 func (mmRemove *mPostMockRemove) Set(f func(postId int) (err error)) *PostMock {
 	if mmRemove.defaultExpectation != nil {
-		mmRemove.mock.t.Fatalf("Default expectation is already set for the PostI.Remove method")
+		mmRemove.mock.t.Fatalf("Default expectation is already set for the Post.Remove method")
 	}
 
 	if len(mmRemove.expectations) > 0 {
-		mmRemove.mock.t.Fatalf("Some expectations are already set for the PostI.Remove method")
+		mmRemove.mock.t.Fatalf("Some expectations are already set for the Post.Remove method")
 	}
 
 	mmRemove.mock.funcRemove = f
 	return mmRemove.mock
 }
 
-// When sets expectation for the PostI.Remove which will trigger the result defined by the following
+// When sets expectation for the Post.Remove which will trigger the result defined by the following
 // Then helper
 func (mmRemove *mPostMockRemove) When(postId int) *PostMockRemoveExpectation {
 	if mmRemove.mock.funcRemove != nil {
@@ -1070,13 +1071,13 @@ func (mmRemove *mPostMockRemove) When(postId int) *PostMockRemoveExpectation {
 	return expectation
 }
 
-// Then sets up PostI.Remove return parameters for the expectation previously defined by the When method
+// Then sets up Post.Remove return parameters for the expectation previously defined by the When method
 func (e *PostMockRemoveExpectation) Then(err error) *PostMock {
 	e.results = &PostMockRemoveResults{err}
 	return e.mock
 }
 
-// Times sets number of times PostI.Remove should be invoked
+// Times sets number of times Post.Remove should be invoked
 func (mmRemove *mPostMockRemove) Times(n uint64) *mPostMockRemove {
 	if n == 0 {
 		mmRemove.mock.t.Fatalf("Times of PostMock.Remove mock can not be zero")
@@ -1096,7 +1097,7 @@ func (mmRemove *mPostMockRemove) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Remove implements repo.PostI
+// Remove implements repo.Post
 func (mmRemove *PostMock) Remove(postId int) (err error) {
 	mm_atomic.AddUint64(&mmRemove.beforeRemoveCounter, 1)
 	defer mm_atomic.AddUint64(&mmRemove.afterRemoveCounter, 1)
@@ -1229,7 +1230,7 @@ type mPostMockUpdate struct {
 	expectedInvocations uint64
 }
 
-// PostMockUpdateExpectation specifies expectation struct of the PostI.Update
+// PostMockUpdateExpectation specifies expectation struct of the Post.Update
 type PostMockUpdateExpectation struct {
 	mock      *PostMock
 	params    *PostMockUpdateParams
@@ -1238,21 +1239,21 @@ type PostMockUpdateExpectation struct {
 	Counter   uint64
 }
 
-// PostMockUpdateParams contains parameters of the PostI.Update
+// PostMockUpdateParams contains parameters of the Post.Update
 type PostMockUpdateParams struct {
 	postId int
 	header *string
 	body   *string
 }
 
-// PostMockUpdateParamPtrs contains pointers to parameters of the PostI.Update
+// PostMockUpdateParamPtrs contains pointers to parameters of the Post.Update
 type PostMockUpdateParamPtrs struct {
 	postId *int
 	header **string
 	body   **string
 }
 
-// PostMockUpdateResults contains results of the PostI.Update
+// PostMockUpdateResults contains results of the Post.Update
 type PostMockUpdateResults struct {
 	err error
 }
@@ -1267,7 +1268,7 @@ func (mmUpdate *mPostMockUpdate) Optional() *mPostMockUpdate {
 	return mmUpdate
 }
 
-// Expect sets up expected params for PostI.Update
+// Expect sets up expected params for Post.Update
 func (mmUpdate *mPostMockUpdate) Expect(postId int, header *string, body *string) *mPostMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("PostMock.Update mock is already set by Set")
@@ -1291,7 +1292,7 @@ func (mmUpdate *mPostMockUpdate) Expect(postId int, header *string, body *string
 	return mmUpdate
 }
 
-// ExpectPostIdParam1 sets up expected param postId for PostI.Update
+// ExpectPostIdParam1 sets up expected param postId for Post.Update
 func (mmUpdate *mPostMockUpdate) ExpectPostIdParam1(postId int) *mPostMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("PostMock.Update mock is already set by Set")
@@ -1313,7 +1314,7 @@ func (mmUpdate *mPostMockUpdate) ExpectPostIdParam1(postId int) *mPostMockUpdate
 	return mmUpdate
 }
 
-// ExpectHeaderParam2 sets up expected param header for PostI.Update
+// ExpectHeaderParam2 sets up expected param header for Post.Update
 func (mmUpdate *mPostMockUpdate) ExpectHeaderParam2(header *string) *mPostMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("PostMock.Update mock is already set by Set")
@@ -1335,7 +1336,7 @@ func (mmUpdate *mPostMockUpdate) ExpectHeaderParam2(header *string) *mPostMockUp
 	return mmUpdate
 }
 
-// ExpectBodyParam3 sets up expected param body for PostI.Update
+// ExpectBodyParam3 sets up expected param body for Post.Update
 func (mmUpdate *mPostMockUpdate) ExpectBodyParam3(body *string) *mPostMockUpdate {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("PostMock.Update mock is already set by Set")
@@ -1357,7 +1358,7 @@ func (mmUpdate *mPostMockUpdate) ExpectBodyParam3(body *string) *mPostMockUpdate
 	return mmUpdate
 }
 
-// Inspect accepts an inspector function that has same arguments as the PostI.Update
+// Inspect accepts an inspector function that has same arguments as the Post.Update
 func (mmUpdate *mPostMockUpdate) Inspect(f func(postId int, header *string, body *string)) *mPostMockUpdate {
 	if mmUpdate.mock.inspectFuncUpdate != nil {
 		mmUpdate.mock.t.Fatalf("Inspect function is already set for PostMock.Update")
@@ -1368,7 +1369,7 @@ func (mmUpdate *mPostMockUpdate) Inspect(f func(postId int, header *string, body
 	return mmUpdate
 }
 
-// Return sets up results that will be returned by PostI.Update
+// Return sets up results that will be returned by Post.Update
 func (mmUpdate *mPostMockUpdate) Return(err error) *PostMock {
 	if mmUpdate.mock.funcUpdate != nil {
 		mmUpdate.mock.t.Fatalf("PostMock.Update mock is already set by Set")
@@ -1381,21 +1382,21 @@ func (mmUpdate *mPostMockUpdate) Return(err error) *PostMock {
 	return mmUpdate.mock
 }
 
-// Set uses given function f to mock the PostI.Update method
+// Set uses given function f to mock the Post.Update method
 func (mmUpdate *mPostMockUpdate) Set(f func(postId int, header *string, body *string) (err error)) *PostMock {
 	if mmUpdate.defaultExpectation != nil {
-		mmUpdate.mock.t.Fatalf("Default expectation is already set for the PostI.Update method")
+		mmUpdate.mock.t.Fatalf("Default expectation is already set for the Post.Update method")
 	}
 
 	if len(mmUpdate.expectations) > 0 {
-		mmUpdate.mock.t.Fatalf("Some expectations are already set for the PostI.Update method")
+		mmUpdate.mock.t.Fatalf("Some expectations are already set for the Post.Update method")
 	}
 
 	mmUpdate.mock.funcUpdate = f
 	return mmUpdate.mock
 }
 
-// When sets expectation for the PostI.Update which will trigger the result defined by the following
+// When sets expectation for the Post.Update which will trigger the result defined by the following
 // Then helper
 func (mmUpdate *mPostMockUpdate) When(postId int, header *string, body *string) *PostMockUpdateExpectation {
 	if mmUpdate.mock.funcUpdate != nil {
@@ -1410,13 +1411,13 @@ func (mmUpdate *mPostMockUpdate) When(postId int, header *string, body *string) 
 	return expectation
 }
 
-// Then sets up PostI.Update return parameters for the expectation previously defined by the When method
+// Then sets up Post.Update return parameters for the expectation previously defined by the When method
 func (e *PostMockUpdateExpectation) Then(err error) *PostMock {
 	e.results = &PostMockUpdateResults{err}
 	return e.mock
 }
 
-// Times sets number of times PostI.Update should be invoked
+// Times sets number of times Post.Update should be invoked
 func (mmUpdate *mPostMockUpdate) Times(n uint64) *mPostMockUpdate {
 	if n == 0 {
 		mmUpdate.mock.t.Fatalf("Times of PostMock.Update mock can not be zero")
@@ -1436,7 +1437,7 @@ func (mmUpdate *mPostMockUpdate) invocationsDone() bool {
 	return totalInvocations > 0 && (expectedInvocations == 0 || expectedInvocations == totalInvocations)
 }
 
-// Update implements repo.PostI
+// Update implements repo.Post
 func (mmUpdate *PostMock) Update(postId int, header *string, body *string) (err error) {
 	mm_atomic.AddUint64(&mmUpdate.beforeUpdateCounter, 1)
 	defer mm_atomic.AddUint64(&mmUpdate.afterUpdateCounter, 1)
